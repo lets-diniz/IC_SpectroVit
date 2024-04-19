@@ -1,0 +1,24 @@
+from utils import normalized_stft
+import numpy as np
+
+
+class PreProcessing:
+    @staticmethod
+    def spectrogram_channel(fid_off: np.ndarray, fid_on: np.ndarray, fs: np.float64) -> np.ndarray:
+
+        fid_diff = fid_on - fid_off
+        fid_result = np.mean(fid_diff, axis=1)
+
+        if fid_result.shape[0] == 2048:
+            spectrogram = normalized_stft(fid=fid_result,
+                                          fs=fs,
+                                          window_size=256,
+                                          hop_size=10,
+                                          nfft=446)
+        elif fid_result.shape[0] == 4096:
+            spectrogram = normalized_stft(fid=fid_result,
+                                          fs=fs,
+                                          window_size=256,
+                                          hop_size=64)
+
+        return spectrogram
