@@ -46,12 +46,10 @@ class ToolsWandb:
         for key, value in config.items():
             new_key = f"{parent_key}{sep}{key}" if parent_key else key
             if isinstance(value, dict):
-                # Correct the call to use the class name for the static method
                 items.extend(ToolsWandb.config_flatten(value, new_key, sep).items())
             else:
                 items.append((new_key, value))
         return dict(items)
-
 
 
 def get_dataset(dataset_configs):
@@ -110,7 +108,13 @@ def experiment_factory(configs):
     optimizer = FACTORY_DICT["optimizer"][list(optimizer_configs.keys())[0]](
         model.parameters(), **optimizer_configs[list(optimizer_configs.keys())[0]]
     )
-    criterion = FACTORY_DICT["loss"][list(criterion_configs.keys())[0]]
+
+    if type(criterion_configs) == dict:
+        criterion = FACTORY_DICT["loss"][list(criterion_configs.keys())[0]](
+            **criterion_configs[list(criterion_configs.keys())[0]]
+        )
+    else:
+        criterion = FACTORY_DICT["loss"][criterion_configs]()
 
     return model, train_loader, validation_loader, optimizer, \
         criterion
@@ -220,7 +224,7 @@ def run_validation(model, optimizer, criterion, loader,
 
     if configs['current_model']['save_model']:
         save_path_model = f"{configs['current_model']['model_dir']}/{configs['current_model']['model_name']}.pt"
-        save_best_model(score_challenge, epoch, model, optimizer, criterion, save_path_model)
+        save_best_model(score_challenge, model, save_path_model)
 
     if configs["valid_on_the_fly"]["activate"]:
         valid_on_the_fly(model, epoch, configs, configs["valid_on_the_fly"]["save_dir_path"])
@@ -236,7 +240,7 @@ def get_params_lr_scheduler(configs):
 
 def calculate_parameters(model):
     qtd_model = sum(p.numel() for p in model.parameters())
-    print(f"quantidade de parametros: {qtd_model}")
+    print(f"Number of parameters: {qtd_model}")
     return
 
 
@@ -267,7 +271,7 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer, c
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="unsupervised main WileC")
+    parser = argparse.ArgumentParser()
 
     parser.add_argument(
         "config_file", type=str, help="Path to YAML configuration file"
@@ -277,6 +281,7 @@ if __name__ == "__main__":
 
     configs = read_yaml(args.config_file)
 
+    print("============ Delete .wandb path ============")
     try:
         shutil.rmtree("wandb/")
     except:

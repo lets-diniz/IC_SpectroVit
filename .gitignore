@@ -1,3 +1,6 @@
 /valid_on_the_fly/
 /models_h5/
 /data/
+wandb/
+.idea/
+__pycache__/
