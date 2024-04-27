@@ -1,9 +1,13 @@
+"""
+Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
+            Mateus Oliveira (m203656@dac.unicamp.br)
+"""
+
 import torch
 import yaml
 import numpy as np
 import h5py
 from scipy import signal
-import os
 
 
 def set_device():
@@ -17,11 +21,6 @@ def set_device():
     return device
 
 
-def clear_directory(dir_path):
-    for file in os.listdir(dir_path):
-        os.remove(os.path.join(dir_path, file))
-
-
 def read_yaml(file: str) -> yaml.loader.FullLoader:
     with open(file, "r") as yaml_file:
         configurations = yaml.load(yaml_file, Loader=yaml.FullLoader)
@@ -30,7 +29,6 @@ def read_yaml(file: str) -> yaml.loader.FullLoader:
 
 
 def zero_padding(matrix, output_shape=(224, 224)):
-
     pad_width = ((0, output_shape[0] - matrix.shape[0]), (0, output_shape[1] - matrix.shape[1]))
     padded_matrix = np.pad(matrix, pad_width, mode="constant")
     return padded_matrix
@@ -52,7 +50,8 @@ def normalized_stft(fid, fs, window_size, hop_size, window='hann', nfft=None):
 
 class ReadDatasets:
     @staticmethod
-    def read_h5_complete(filename: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.float64, np.float64, np.float64]:
+    def read_h5_complete(filename: str) -> tuple[
+        np.ndarray, np.ndarray, np.ndarray, np.float64, np.float64, np.float64]:
         with h5py.File(filename) as hf:
             transients = hf["transient_specs"][()]
             target_spectrum = hf["target_spectra"][()]

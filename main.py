@@ -1,3 +1,8 @@
+"""
+Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
+            Mateus Oliveira (m203656@dac.unicamp.br)
+"""
+
 import argparse
 import gc
 import os
@@ -157,7 +162,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
     return running_loss
 
 
-def run_validation(model, optimizer, criterion, loader,
+def run_validation(model, criterion, loader,
                    epoch, configs, epsilon=1e-5):
     with torch.no_grad():
         torch.cuda.empty_cache()
@@ -205,7 +210,7 @@ def run_validation(model, optimizer, criterion, loader,
                           f"Shape Score:{running_shape_score / (batch_idx + 1):.7f}")
                 )
 
-    epoch_loss = (running_loss / len(loader)).detach().numpy()
+    loader_loss = (running_loss / len(loader)).detach().numpy()
 
     loader_mean_mse = running_mse / len(loader)
     loader_mean_snr = running_snr / len(loader)
@@ -228,7 +233,7 @@ def run_validation(model, optimizer, criterion, loader,
 
     if configs["valid_on_the_fly"]["activate"]:
         valid_on_the_fly(model, epoch, configs, configs["valid_on_the_fly"]["save_dir_path"])
-    return epoch_loss
+    return loader_loss
 
 
 def get_params_lr_scheduler(configs):
@@ -259,7 +264,7 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer, c
         )
 
         valid_loss = run_validation(
-            model, optimizer, criterion, validation_loader,
+            model, criterion, validation_loader,
             epoch, configs
         )
         if custom_lr_scheduler is not None:

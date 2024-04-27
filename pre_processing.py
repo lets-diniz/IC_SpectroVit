@@ -1,3 +1,8 @@
+"""
+Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
+            Mateus Oliveira (m203656@dac.unicamp.br)
+"""
+
 from utils import normalized_stft
 import numpy as np
 
