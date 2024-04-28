@@ -5,12 +5,12 @@ wandb:
 
 current_model:
   save_model: True
-  model_dir: "models_h5"
+  model_dir: "weights"
   model_name: "SpectroViTNew"
 
 reload_from_existing_model:
   activate: False
-  model_dir: "models_h5"
+  model_dir: "weights"
   model_name: "SpectroViTReload"
 
 epochs: 20
@@ -41,7 +41,7 @@ valid:
 train_dataset:
   DatasetThreeChannelSpectrogram:
     path_data: "data/train"
-    validation: False
+    evaluation: False
     random_augment:
       amplitude:
         noise_level_base:
@@ -68,8 +68,13 @@ train_dataset:
 valid_dataset:
   DatasetThreeChannelSpectrogram:
     path_data: "data/val"
-    validation: True
+    evaluation: True
 
 valid_on_the_fly:
   activate: True
   save_dir_path: "valid_on_the_fly"
+
+test_dataset:
+  DatasetThreeChannelSpectrogram:
+    path_data: "data/test"
+    evaluation: True

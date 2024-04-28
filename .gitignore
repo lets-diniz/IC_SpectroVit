@@ -1,6 +1,7 @@
 /valid_on_the_fly/
-/models_h5/
+/weights/
 /data/
 wandb/
 .idea/
 __pycache__/
+/evaluate_results/

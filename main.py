@@ -28,7 +28,7 @@ def valid_on_the_fly(model, epoch, configs, save_dir_path):
         **val_dataset_configs[list(val_dataset_configs.keys())[0]])
 
     random_index = random.randint(0, len(val_dataset) - 1)
-    input, target, ppm, _ = val_dataset[random_index]
+    input, target, ppm, filename = val_dataset[random_index]
     input = torch.unsqueeze(input, dim=0).to(DEVICE)
 
     prediction = model(input)
@@ -38,10 +38,14 @@ def valid_on_the_fly(model, epoch, configs, save_dir_path):
     ppm = ppm.numpy()
 
     os.makedirs(save_dir_path, exist_ok=True)
+    os.makedirs(os.path.join(save_dir_path, "spectra_comparison"), exist_ok=True)
+    os.makedirs(os.path.join(save_dir_path, "shape_score_comparison"), exist_ok=True)
 
-    PlotMetrics.spectra_comparison(prediction, target, ppm, f"{save_dir_path}/spectra_comparison_epoch_{epoch + 1}.png")
+    filename = filename.split(".")[0]
+    PlotMetrics.spectra_comparison(prediction, target, ppm,
+                                   f"{save_dir_path}/spectra_comparison/{filename}_epoch_{epoch+1}.png")
     PlotMetrics.shape_score_comparison(prediction, target, ppm,
-                                       f"{save_dir_path}/shape_score_comparison_{epoch + 1}.png")
+                                       f"{save_dir_path}/shape_score_comparison/{filename}_{epoch + 1}.png")
 
 
 class ToolsWandb:

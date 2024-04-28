@@ -16,8 +16,8 @@ class DatasetThreeChannelSpectrogram(Dataset):
     def __init__(self, **kargs: dict) -> None:
         self.path_data = kargs['path_data']
         self.file_list = os.listdir(self.path_data)
-        self.validation = kargs["validation"]
-        if not self.validation:
+        self.evaluation = kargs["evaluation"]
+        if not self.evaluation:
             self.random_augment = kargs["random_augment"]
 
 
@@ -69,7 +69,7 @@ class DatasetThreeChannelSpectrogram(Dataset):
 
         t = np.arange(0, tacq, 1 / fs)
 
-        if not self.validation:
+        if not self.evaluation:
             transients_augment = self.create_FID_noise(transients, t)
             fid_off, fid_on = transients_augment[0, :, 0, :], transients_augment[0, :, 1, :]
         else:
