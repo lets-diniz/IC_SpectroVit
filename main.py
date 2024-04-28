@@ -232,7 +232,6 @@ def run_validation(model, criterion, loader,
 
     if configs['current_model']['save_model']:
         save_path_model = f"{configs['current_model']['model_dir']}/{configs['current_model']['model_name']}.pt"
-        os.makedirs(configs['current_model']['model_dir'], exist_ok=True)
         save_best_model(score_challenge, model, save_path_model)
 
     if configs["valid_on_the_fly"]["activate"]:
