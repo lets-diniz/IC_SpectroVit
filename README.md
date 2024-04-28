@@ -1,6 +1,6 @@
 ## Project Overview
 
-Magnetic Resonance Spectroscopy (MRS) is a non-invasive technique for quantifying metabolite concentrations in vivo, notably useful for measuring gamma-aminobutyric acid (GABA), a key inhibitory neurotransmitter in the brain. Detecting GABA is difficult due to stronger overlapping signals. MEGA-PRESS is a commonly used MRS editing method for accurate GABA measurement, although it faces challenges with low signal-to-noise ratios (SNR). To improve SNR, repeated measurements, or transients, are taken during the scan and averaged, resulting in longer scan times. Typically, scans involve 320 transients.
+Magnetic Resonance Spectroscopy (MRS) is a non-invasive technique for quantifying metabolite concentrations in vivo, notably useful for measuring gamma-aminobutyric acid (GABA), a key inhibitory neurotransmitter in the brain. Detecting GABA is difficult due to stronger overlapping signals. MEGA-PRESS is a commonly used MRS editing method for accurate GABA measurement, although it faces challenges with low signal-to-noise ratios (SNR). To improve SNR, repeated measurements, or transients, are taken during the scan, resulting in longer scan times. Typically, scans involve 320 transients.
 
 This repository hosts the code for the **Spectro-ViT Deep Learning (DL) model**, which **reconstructs GABA-edited MEGA-PRESS scans using only one-quarter (80 transients)** of the usual number of transients required. Spectro-ViT represents the latest advancement in this field and was the **overall winner of the Edited-MRS Reconstruction Challenge**. The repository provides a robust training framework for GABA-edited MEGA-PRESS reconstruction using the Spectro-ViT model, built on **PyTorch**. Designed for reproducibility, flexibility, and scalability, it allows researchers to easily reproduce the experiments conducted to train the Spectro-ViT model, adapt, and expand the model. Furthermore, it offers the capability to test other DL models tailored to different datasets and experimental configurations.
 
@@ -29,7 +29,7 @@ The model's training and evaluation behaviors are fully configurable through a Y
 - `project`: Specifies the project name under which the runs should be logged in Weights & Biases.
 - `entity`: Specifies the user or team name under Weights & Biases where the project is located.
 
-### Model Configuration
+### Saving/Reloading Model
 
 - **Current Model**
   - `save_model`: Enable or disable the saving of model weights.
@@ -41,6 +41,11 @@ The model's training and evaluation behaviors are fully configurable through a Y
   - `model_dir`: Directory from where the model weights should be loaded.
   - `model_name`: Name of the model weights file to be loaded.
 
+### Model Configuration
+- **Model**
+  - `Model Class Name`: Specifies the model class. Example: `SpectroViT`.
+    - `Instantiation parameters of the model class`.
+    
 ### Training Parameters
 
 - `epochs`: Number of training epochs.

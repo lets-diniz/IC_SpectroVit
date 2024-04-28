@@ -14,7 +14,7 @@ from tqdm import trange
 from constants import *
 from lr_scheduler import CustomLRScheduler
 from metrics import calculate_metrics
-from utils import read_yaml
+from utils import read_yaml, clean_directory
 from plot_metrics import PlotMetrics
 
 plot_metrics = PlotMetrics()
@@ -37,7 +37,6 @@ def valid_on_the_fly(model, epoch, configs, save_dir_path):
     target = target.numpy()
     ppm = ppm.numpy()
 
-    os.makedirs(save_dir_path, exist_ok=True)
     os.makedirs(os.path.join(save_dir_path, "spectra_comparison"), exist_ok=True)
     os.makedirs(os.path.join(save_dir_path, "shape_score_comparison"), exist_ok=True)
 
@@ -45,7 +44,7 @@ def valid_on_the_fly(model, epoch, configs, save_dir_path):
     PlotMetrics.spectra_comparison(prediction, target, ppm,
                                    f"{save_dir_path}/spectra_comparison/{filename}_epoch_{epoch+1}.png")
     PlotMetrics.shape_score_comparison(prediction, target, ppm,
-                                       f"{save_dir_path}/shape_score_comparison/{filename}_{epoch + 1}.png")
+                                       f"{save_dir_path}/shape_score_comparison/{filename}_epoch_{epoch + 1}.png")
 
 
 class ToolsWandb:
@@ -221,7 +220,7 @@ def run_validation(model, criterion, loader,
     loader_mean_linewidth = running_linewidth / len(loader)
     loader_mean_shape_score = running_shape_score / len(loader)
 
-    score_challenge = (0.8 * loader_mean_mse + 0.2 * (1 / loader_mean_shape_score + epsilon))
+    score_challenge = (0.8 * loader_mean_mse + 0.2 * (1 / (loader_mean_shape_score + epsilon)))
 
     if configs['wandb']["activate"]:
         wandb.log({'mean_valid_loss': loss})
@@ -233,6 +232,7 @@ def run_validation(model, criterion, loader,
 
     if configs['current_model']['save_model']:
         save_path_model = f"{configs['current_model']['model_dir']}/{configs['current_model']['model_name']}.pt"
+        os.makedirs(configs['current_model']['model_dir'], exist_ok=True)
         save_best_model(score_challenge, model, save_path_model)
 
     if configs["valid_on_the_fly"]["activate"]:
@@ -315,6 +315,11 @@ if __name__ == "__main__":
         load_dict = torch.load(name_model)
 
         model.load_state_dict(load_dict['model_state_dict'])
+
+    if configs["valid_on_the_fly"]["activate"]:
+        valid_save_dir_path = configs["valid_on_the_fly"]["save_dir_path"]
+        os.makedirs(valid_save_dir_path, exist_ok=True)
+        clean_directory(valid_save_dir_path)
 
     if configs['wandb']["activate"]:
         wandb.init(project=configs['wandb']["project"],

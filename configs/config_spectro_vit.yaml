@@ -13,6 +13,8 @@ reload_from_existing_model:
   model_dir: "weights"
   model_name: "SpectroViTReload"
 
+model: SpectroViT
+
 epochs: 20
 
 optimizer:
@@ -27,8 +29,6 @@ lr_scheduler:
   info:
     T_max: 10
     eta_min: 0.000001
-
-model: SpectroViT
 
 train:
   batch_size: 100

@@ -113,4 +113,10 @@ def calculate_shape_score(x, y, ppm):
     gaba_corr = np.corrcoef(gaba_spec_x, gaba_spec_y)[0, 1]
     glx_corr = np.corrcoef(glx_spec_x, glx_spec_y)[0, 1]
 
+    if gaba_corr < 0:
+        gaba_corr = 0
+
+    if glx_corr < 0:
+        glx_corr = 0
+
     return (0.6 * gaba_corr + 0.4 * glx_corr)

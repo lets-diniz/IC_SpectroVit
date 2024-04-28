@@ -12,6 +12,7 @@ from plot_metrics import PlotMetrics
 from constants import *
 from torch.utils.data import DataLoader
 from metrics import calculate_metrics
+from utils import clean_directory
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -82,10 +83,16 @@ if __name__ == "__main__":
         ppm = ppm[0, :]
 
         save_dir_path = "evaluate_results"
+        spectra_comparison_dir_path = os.path.join(save_dir_path, "spectra_comparison")
+        shape_score_comparison_dir_path = os.path.join(save_dir_path, "shape_score_comparison")
 
         os.makedirs(save_dir_path, exist_ok=True)
-        os.makedirs(os.path.join(save_dir_path, "spectra_comparison"), exist_ok=True)
-        os.makedirs(os.path.join(save_dir_path, "shape_score_comparison"), exist_ok=True)
+        os.makedirs(spectra_comparison_dir_path, exist_ok=True)
+        os.makedirs(shape_score_comparison_dir_path, exist_ok=True)
+
+        if i == 0:
+            clean_directory(spectra_comparison_dir_path)
+            clean_directory(shape_score_comparison_dir_path)
 
         filename = filename.split(".")[0]
         PlotMetrics.spectra_comparison(prediction, target, ppm,

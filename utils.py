@@ -8,6 +8,7 @@ import yaml
 import numpy as np
 import h5py
 from scipy import signal
+import os
 
 
 def set_device():
@@ -19,6 +20,16 @@ def set_device():
     print('Using {}'.format(device))
 
     return device
+
+
+def clean_directory(dir_path):
+    for file_name in os.listdir(dir_path):
+        file_absolute_path = os.path.join(dir_path, file_name)
+        if os.path.isfile(file_absolute_path):
+            os.remove(file_absolute_path)
+        elif os.path.isdir(file_absolute_path):
+            clean_directory(file_absolute_path)
+            os.rmdir(file_absolute_path)
 
 
 def read_yaml(file: str) -> yaml.loader.FullLoader:
