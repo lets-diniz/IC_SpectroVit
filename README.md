@@ -1,3 +1,5 @@
+[![GitHub](https://img.shields.io/badge/MICLab-Spectro_ViT-blue)](https://github.com/MICLab-Unicamp/Spectro-ViT)
+
 ## Project Overview
 
 Magnetic Resonance Spectroscopy (MRS) is a non-invasive technique for quantifying metabolite concentrations in vivo, notably useful for measuring gamma-aminobutyric acid (GABA), a key inhibitory neurotransmitter in the brain. Detecting GABA is difficult due to stronger overlapping signals. MEGA-PRESS is a commonly used MRS editing method for accurate GABA measurement, although it faces challenges with low signal-to-noise ratios (SNR). To improve SNR, repeated measurements, or transients, are taken during the scan, resulting in longer scan times. Typically, scans involve 320 transients.
