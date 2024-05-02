@@ -160,9 +160,9 @@ def run_train_epoch(model, optimizer, criterion, loader,
             if configs['wandb']["activate"]:
                 wandb.log({'train_loss': loss})
 
-        running_loss = (running_loss / len(loader))
+        loader_loss = (running_loss / len(loader))
 
-    return running_loss
+    return loader_loss
 
 
 def run_validation(model, criterion, loader,
@@ -241,9 +241,15 @@ def run_validation(model, criterion, loader,
 
 def get_params_lr_scheduler(configs):
     activate = bool(configs["lr_scheduler"]["activate"])
-    scheduler_kwargs = configs["lr_scheduler"]["info"]
-    scheduler_type = configs["lr_scheduler"]["scheduler_type"]
+    if activate:
+        scheduler_kwargs = configs["lr_scheduler"]["info"]
+        scheduler_type = configs["lr_scheduler"]["scheduler_type"]
+    else:
+        scheduler_kwargs = None
+        scheduler_type = None
+
     return activate, scheduler_type, scheduler_kwargs
+
 
 
 def calculate_parameters(model):
