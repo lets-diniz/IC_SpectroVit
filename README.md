@@ -131,6 +131,12 @@ Here's an example of how you might evaluate the trained model:
 python evaluate.py configs/config_spectro_vit.yaml weights/SpectroViT.pt
 ```
 
+## Developers
+
+- [Gabriel Dias](https://github.com/gsantosmdias)
+- [Mateus Oliveira](https://github.com/oliveiraMats2)
+- [Lucas Ueda](https://github.com/lucashueda)
+
 ## Citation
 
 Edited-MRS Reconstruction Challenge citation:
