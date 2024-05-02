@@ -6,7 +6,8 @@ Magnetic Resonance Spectroscopy (MRS) is a non-invasive technique for quantifyin
 
 This repository hosts the code for the **Spectro-ViT Deep Learning (DL) model**, which **reconstructs GABA-edited MEGA-PRESS scans using only one-quarter (80 transients)** of the usual number of transients required. Spectro-ViT represents the latest advancement in this field and was the **overall winner of the Edited-MRS Reconstruction Challenge**. The repository provides a robust training framework for GABA-edited MEGA-PRESS reconstruction using the Spectro-ViT model, built on **PyTorch**. Designed for reproducibility, flexibility, and scalability, it allows researchers to easily reproduce the experiments conducted to train the Spectro-ViT model, adapt, and expand the model. Furthermore, it offers the capability to test other DL models tailored to different datasets and experimental configurations.
 
-![qualificação-Copy of architecture](https://github.com/MICLab-Unicamp/Spectro-ViT/assets/91618118/b0cf7831-f77b-4115-bcfc-36470162d4d2)
+![image](https://github.com/MICLab-Unicamp/Spectro-ViT/assets/91618118/098fcee1-ecb7-4547-99a3-71422d2580f0)
+
 *Figure 1: Model architecture.*
 
 For more information about the Edited-MRS Reconstruction Challenge, visit the [challenge webpage](https://sites.google.com/view/edited-mrs-rec-challenge/home?authuser=0). Check the [journal publication](https://link.springer.com/article/10.1007/s10334-024-01156-9) documenting the challenge results. To access our trained weights and perform our model's inferences submitted in the challenge, visit the [GitHub repository from our team, Deep Spectral Divers](https://github.com/MICLab-Unicamp/MICLab-2023-ISBI-MRS-Challenge).
@@ -136,6 +137,14 @@ python evaluate.py configs/config_spectro_vit.yaml weights/SpectroViT.pt
 - [Gabriel Dias](https://github.com/gsantosmdias)
 - [Mateus Oliveira](https://github.com/oliveiraMats2)
 - [Lucas Ueda](https://github.com/lucashueda)
+
+## Credits
+
+- The Data Augmentation code used in this research was adapted from: [![GitHub](https://img.shields.io/badge/rmsouza01-Edit_MRS_Challenge-purple)](https://github.com/rmsouza01/Edited-MRS-challenge)
+
+- The Quantification of the reconstructed spectra obtained in this research was derived using code from: [![rodrigopberto](https://img.shields.io/badge/rodrigopberto-Edited%20MRS%20DL%20Reconstruction-green)](https://github.com/rodrigopberto/Edited-MRS-DL-Reconstruction)
+
+
 
 ## Citation
 
