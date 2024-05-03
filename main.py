@@ -166,7 +166,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
 
 def run_validation(model, criterion, loader,
-                   epoch, configs, epsilon=1e-5):
+                   epoch, configs, epsilon=1e-10):
     with torch.no_grad():
         torch.cuda.empty_cache()
         gc.collect()
