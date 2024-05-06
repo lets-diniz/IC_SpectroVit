@@ -17,8 +17,6 @@ from metrics import calculate_metrics
 from utils import read_yaml, clean_directory
 from plot_metrics import PlotMetrics
 
-plot_metrics = PlotMetrics()
-
 
 def valid_on_the_fly(model, epoch, configs, save_dir_path):
     model.eval()
