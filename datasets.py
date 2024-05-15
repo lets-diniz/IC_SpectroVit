@@ -20,7 +20,6 @@ class DatasetThreeChannelSpectrogram(Dataset):
         if not self.evaluation:
             self.random_augment = kargs["random_augment"]
 
-
     def __len__(self) -> int:
         return len(self.file_list)
 
@@ -64,7 +63,7 @@ class DatasetThreeChannelSpectrogram(Dataset):
         path_sample = os.path.join(self.path_data, self.file_list[idx])
         filename = os.path.basename(path_sample)
 
-        transients, target_spectrum, ppm, fs, tacq, _ = ReadDatasets.read_h5_complete(path_sample)
+        transients, target_spectrum, ppm, fs, tacq, larmorfreq = ReadDatasets.read_h5_complete(path_sample)
         target_spectrum /= np.max(np.abs(target_spectrum))
 
         t = np.arange(0, tacq, 1 / fs)
@@ -77,13 +76,16 @@ class DatasetThreeChannelSpectrogram(Dataset):
 
         spectrogram1 = PreProcessing.spectrogram_channel(fid_off=fid_off[:, 0:14],
                                                          fid_on=fid_on[:, 0:14],
-                                                         fs=fs)
+                                                         fs=fs,
+                                                         larmorfreq=larmorfreq)
         spectrogram2 = PreProcessing.spectrogram_channel(fid_off=fid_off[:, 14:27],
                                                          fid_on=fid_on[:, 14:27],
-                                                         fs=fs)
+                                                         fs=fs,
+                                                         larmorfreq=larmorfreq)
         spectrogram3 = PreProcessing.spectrogram_channel(fid_off=fid_off[:, 27:40],
                                                          fid_on=fid_on[:, 27:40],
-                                                         fs=fs)
+                                                         fs=fs,
+                                                         larmorfreq=larmorfreq)
 
         spectrogram1 = zero_padding(spectrogram1)
         spectrogram1 = spectrogram1[np.newaxis, ...]

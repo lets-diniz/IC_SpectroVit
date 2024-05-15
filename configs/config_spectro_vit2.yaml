@@ -1,0 +1,80 @@
+wandb:
+  activate: False
+  project: ""
+  entity: ""
+
+current_model:
+  save_model: True
+  model_dir: "weights"
+  model_name: "SpectroViT2"
+
+reload_from_existing_model:
+  activate: True
+  model_dir: "weights"
+  model_name: "SpectroViT1"
+
+model: SpectroViT
+
+epochs: 10
+
+optimizer:
+  Adam:
+    lr: 0.00001
+
+loss: RangeMAELoss
+
+lr_scheduler:
+  activate: True
+  scheduler_type: "cosineannealinglr"
+  info:
+    T_max: 10
+    eta_min: 0.000001
+
+train:
+  batch_size: 100
+  num_workers: 4
+
+valid:
+  batch_size: 200
+  num_workers: 4
+
+train_dataset:
+  DatasetThreeChannelSpectrogram:
+    path_data: "data/train"
+    evaluation: False
+    random_augment:
+      amplitude:
+        noise_level_base:
+          max: 5
+          min: 0
+        noise_level_scan_var:
+          max: 3
+          min: 0
+      frequency:
+        noise_level_base:
+          max: 3
+          min: 0
+        noise_level_scan_var:
+          max: 3
+          min: 0
+      phase:
+        noise_level_base:
+          max: 3
+          min: 0
+        noise_level_scan_var:
+          max: 3
+          min: 0
+
+valid_dataset:
+  DatasetThreeChannelSpectrogram:
+    path_data: "data/val"
+    evaluation: True
+
+valid_on_the_fly:
+  activate: True
+  save_dir_path: "valid_on_the_fly"
+
+test_dataset:
+  DatasetThreeChannelSpectrogram:
+    path_data: "data/test"
+    evaluation: True

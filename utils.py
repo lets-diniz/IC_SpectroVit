@@ -45,17 +45,26 @@ def zero_padding(matrix, output_shape=(224, 224)):
     return padded_matrix
 
 
-def normalized_stft(fid, fs, window_size, hop_size, window='hann', nfft=None):
+def normalized_stft(fid, fs, larmorfreq, window_size, hop_size, window='hann', nfft=None):
     noverlap = window_size - hop_size
 
     if not signal.check_NOLA(window, window_size, noverlap):
         raise ValueError("signal windowing fails Non-zero Overlap Add (NOLA) criterion; "
                          "STFT not invertible")
 
-    _, _, stft_coefficients = signal.stft(np.real(fid), fs=fs, nperseg=window_size, noverlap=noverlap,
-                                          return_onesided=True, nfft=nfft)
+    f, t, stft_coefficients = signal.stft(fid, fs=fs, nperseg=window_size, noverlap=noverlap,
+                                          nfft=nfft, return_onesided=False)
 
+    stft_coefficients = np.concatenate([np.split(stft_coefficients, 2)[1],
+                                        np.split(stft_coefficients, 2)[0]])
+    f = np.concatenate([np.split(f, 2)[1],
+                        np.split(f, 2)[0]])
+
+    ppm = 4.65 + f / larmorfreq
+    stft_coefficients = np.flip(stft_coefficients, axis=0)
+    stft_coefficients = stft_coefficients[(ppm >= 0) & (ppm <= 12), :]
     stft_coefficients = stft_coefficients / (np.max(np.abs(stft_coefficients)))
+
     return stft_coefficients
 
 

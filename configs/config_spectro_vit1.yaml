@@ -6,12 +6,12 @@ wandb:
 current_model:
   save_model: True
   model_dir: "weights"
-  model_name: "SpectroViTNew"
+  model_name: "SpectroViT1"
 
 reload_from_existing_model:
   activate: False
-  model_dir: "weights"
-  model_name: "SpectroViTReload"
+  model_dir: ""
+  model_name: ""
 
 model: SpectroViT
 

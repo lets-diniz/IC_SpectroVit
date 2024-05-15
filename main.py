@@ -40,7 +40,7 @@ def valid_on_the_fly(model, epoch, configs, save_dir_path):
 
     filename = filename.split(".")[0]
     PlotMetrics.spectra_comparison(prediction, target, ppm,
-                                   f"{save_dir_path}/spectra_comparison/{filename}_epoch_{epoch+1}.png")
+                                   f"{save_dir_path}/spectra_comparison/{filename}_epoch_{epoch + 1}.png")
     PlotMetrics.shape_score_comparison(prediction, target, ppm,
                                        f"{save_dir_path}/shape_score_comparison/{filename}_epoch_{epoch + 1}.png")
 
@@ -164,7 +164,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
 
 def run_validation(model, criterion, loader,
-                   epoch, configs, epsilon=1e-10):
+                   epoch, configs, wandb_run, epsilon=1e-10):
     with torch.no_grad():
         torch.cuda.empty_cache()
         gc.collect()
@@ -230,7 +230,7 @@ def run_validation(model, criterion, loader,
 
     if configs['current_model']['save_model']:
         save_path_model = f"{configs['current_model']['model_dir']}/{configs['current_model']['model_name']}.pt"
-        save_best_model(score_challenge, model, save_path_model)
+        save_best_model(score_challenge, model, save_path_model, wandb_run)
 
     if configs["valid_on_the_fly"]["activate"]:
         valid_on_the_fly(model, epoch, configs, configs["valid_on_the_fly"]["save_dir_path"])
@@ -249,7 +249,6 @@ def get_params_lr_scheduler(configs):
     return activate, scheduler_type, scheduler_kwargs
 
 
-
 def calculate_parameters(model):
     qtd_model = sum(p.numel() for p in model.parameters())
     print(f"Number of parameters: {qtd_model}")
@@ -257,7 +256,7 @@ def calculate_parameters(model):
 
 
 def run_training_experiment(model, train_loader, validation_loader, optimizer, custom_lr_scheduler,
-                            criterion, configs
+                            criterion, configs, wandb_run
                             ):
     if configs['current_model']['save_model']:
         os.makedirs(configs['current_model']['model_dir'], exist_ok=True)
@@ -272,7 +271,7 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer, c
 
         valid_loss = run_validation(
             model, criterion, validation_loader,
-            epoch, configs
+            epoch, configs, wandb_run
         )
         if custom_lr_scheduler is not None:
             if custom_lr_scheduler.scheduler_type == "reducelronplateau":
@@ -325,15 +324,17 @@ if __name__ == "__main__":
         clean_directory(valid_save_dir_path)
 
     if configs['wandb']["activate"]:
-        wandb.init(project=configs['wandb']["project"],
-                   reinit=True,
-                   config=f_configurations,
-                   entity=configs['wandb']["entity"],
-                   save_code=False)
+        wandb_run = wandb.init(project=configs['wandb']["project"],
+                               reinit=True,
+                               config=f_configurations,
+                               entity=configs['wandb']["entity"],
+                               save_code=False)
+    else:
+        wandb_run = None
 
     run_training_experiment(
         model, train_loader, validation_loader, optimizer, custom_lr_scheduler,
-        criterion, configs
+        criterion, configs, wandb_run
     )
 
     torch.cuda.empty_cache()
