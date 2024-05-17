@@ -45,24 +45,24 @@ train_dataset:
     random_augment:
       amplitude:
         noise_level_base:
-          max: 3
+          max: 2
           min: 0
         noise_level_scan_var:
-          max: 3
+          max: 2
           min: 0
       frequency:
         noise_level_base:
-          max: 3
+          max: 2
           min: 0
         noise_level_scan_var:
-          max: 3
+          max: 2
           min: 0
       phase:
         noise_level_base:
-          max: 3
+          max: 2
           min: 0
         noise_level_scan_var:
-          max: 3
+          max: 2
           min: 0
 
 valid_dataset:

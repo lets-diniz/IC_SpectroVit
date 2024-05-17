@@ -24,12 +24,12 @@ class DatasetThreeChannelSpectrogram(Dataset):
         return len(self.file_list)
 
     def _get_interval_method_augment(self, key):
-        max = self.random_augment[key]["noise_level_base"]["max"]
+        max = self.random_augment[key]["noise_level_base"]["max"] + 1
         min = self.random_augment[key]["noise_level_base"]["min"]
 
         noise_level_base = np.random.randint(min, max)
 
-        max = self.random_augment[key]["noise_level_scan_var"]["max"]
+        max = self.random_augment[key]["noise_level_scan_var"]["max"] + 1
         min = self.random_augment[key]["noise_level_scan_var"]["min"]
 
         noise_level_scan_var = np.random.randint(min, max)

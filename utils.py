@@ -62,7 +62,7 @@ def normalized_stft(fid, fs, larmorfreq, window_size, hop_size, window='hann', n
 
     ppm = 4.65 + f / larmorfreq
     stft_coefficients = np.flip(stft_coefficients, axis=0)
-    stft_coefficients = stft_coefficients[(ppm >= 0) & (ppm <= 12), :]
+    stft_coefficients = stft_coefficients[(ppm >= 0) & (ppm <= 10), :]
     stft_coefficients = stft_coefficients / (np.max(np.abs(stft_coefficients)))
 
     return stft_coefficients
