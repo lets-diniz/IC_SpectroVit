@@ -22,6 +22,19 @@ For more information about the Edited-MRS Reconstruction Challenge, visit the [c
 - **On-the-Fly Validation**: Supports real-time validation with visualization during training, crucial for iterative development and performance tuning. 
 - **Customizable Training Framework**: Users can modify various aspects of the model and training process through the YAML configuration file, tailoring the framework to specific research needs and objectives.
 
+## HDF5 File Data Organization
+
+The data is expected to be organized in an HDF5 file with the following keys:
+
+- **transient_specs**: Contains the transients as a NumPy array with the shape (number of points, subsignal axis, number of transients). The subsignal axis 0 is for the edit-off signals and axis 1 for the edit-on signals.
+- **target_spectra**: Contains the target spectrum as a NumPy array.
+- **ppm**: Parts per million (ppm) scale as a NumPy array.
+- **fs**: Sampling frequency as a float64.
+- **tacq**: Acquisition time as a float64.
+- **larmorfreq**: Spectrometer frequency as a float64.
+
+The `read_h5_complete` function reads these keys from the specified HDF5 file and returns them as a tuple of NumPy arrays and float64 values.
+
 ## Configuration File Details
 
 The model's training and evaluation behaviors are fully configurable through a YAML configuration file. Below, you will find detailed explanations of key sections within this file:
@@ -139,10 +152,11 @@ python evaluate.py configs/config_spectro_vit.yaml weights/SpectroViT.pt
 - [Lucas Ueda](https://github.com/lucashueda)
 
 ## Credits
+- The target data and quantification results were obtained using the [Gannet software](https://onlinelibrary.wiley.com/doi/full/10.1002/jmri.24478): [![Gannet](https://img.shields.io/badge/markmikkelsen-Gannet-orange)](https://github.com/markmikkelsen/Gannet)
 
 - The Data Augmentation code used in this research was adapted from: [![GitHub](https://img.shields.io/badge/rmsouza01-Edit_MRS_Challenge-purple)](https://github.com/rmsouza01/Edited-MRS-challenge)
 
-- The Quantification of the reconstructed spectra obtained in this research was derived using code from: [![rodrigopberto](https://img.shields.io/badge/rodrigopberto-Edited%20MRS%20DL%20Reconstruction-green)](https://github.com/rodrigopberto/Edited-MRS-DL-Reconstruction)
+- This research utilized Python code that interfaces with MATLAB to quantify the reconstructed spectra using Gannet, derived from: [![rodrigopberto](https://img.shields.io/badge/rodrigopberto-Edited%20MRS%20DL%20Reconstruction-green)](https://github.com/rodrigopberto/Edited-MRS-DL-Reconstruction)
 
 
 
