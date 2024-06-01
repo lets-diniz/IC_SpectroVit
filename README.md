@@ -152,11 +152,12 @@ python evaluate.py configs/config_spectro_vit.yaml weights/SpectroViT.pt
 - [Lucas Ueda](https://github.com/lucashueda)
 
 ## Credits
-- The target data and quantification results were obtained using the [Gannet software](https://onlinelibrary.wiley.com/doi/full/10.1002/jmri.24478): [![Gannet](https://img.shields.io/badge/markmikkelsen-Gannet-orange)](https://github.com/markmikkelsen/Gannet)
+- The _in-vivo_ data utilized is this study was sampled from the [Big GABA repository](https://www.nitrc.org/projects/biggaba/) ([Publication](https://pubmed.ncbi.nlm.nih.gov/28716717/)).
+- The target data and quantification results were obtained using the [Gannet software](https://onlinelibrary.wiley.com/doi/full/10.1002/jmri.24478): [![Gannet](https://img.shields.io/badge/markmikkelsen-Gannet-orange)](https://github.com/markmikkelsen/Gannet).
 
-- The Data Augmentation code used in this research was adapted from: [![GitHub](https://img.shields.io/badge/rmsouza01-Edit_MRS_Challenge-purple)](https://github.com/rmsouza01/Edited-MRS-challenge)
+- The Data Augmentation code used in this research was adapted from: [![GitHub](https://img.shields.io/badge/rmsouza01-Edit_MRS_Challenge-purple)](https://github.com/rmsouza01/Edited-MRS-challenge).
 
-- This research utilized Python code that interfaces with MATLAB to quantify the reconstructed spectra using Gannet, derived from: [![rodrigopberto](https://img.shields.io/badge/rodrigopberto-Edited%20MRS%20DL%20Reconstruction-green)](https://github.com/rodrigopberto/Edited-MRS-DL-Reconstruction)
+- This research utilized Python code that interfaces with MATLAB to quantify the reconstructed spectra using Gannet, derived from: [![rodrigopberto](https://img.shields.io/badge/rodrigopberto-Edited%20MRS%20DL%20Reconstruction-green)](https://github.com/rodrigopberto/Edited-MRS-DL-Reconstruction).
 
 
 
