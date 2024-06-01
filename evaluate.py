@@ -104,6 +104,7 @@ if __name__ == "__main__":
 
     df.to_csv(os.path.join(save_dir_path, "result_metrics.csv"), index=False)
 
+    print("Challenge Metrics Eval:")
     print(f"Mean MSE: {df['mse'].mean()}")
     print(f"Mean SNR: {df['snr'].mean()}")
     print(f"Mean FHWM: {df['linewidth'].mean()}")

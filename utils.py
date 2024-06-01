@@ -55,17 +55,17 @@ def normalized_stft(fid, fs, larmorfreq, window_size, hop_size, window='hann', n
     f, t, stft_coefficients = signal.stft(fid, fs=fs, nperseg=window_size, noverlap=noverlap,
                                           nfft=nfft, return_onesided=False)
 
-    stft_coefficients = np.concatenate([np.split(stft_coefficients, 2)[1],
-                                        np.split(stft_coefficients, 2)[0]])
     f = np.concatenate([np.split(f, 2)[1],
                         np.split(f, 2)[0]])
-
     ppm = 4.65 + f / larmorfreq
-    stft_coefficients = np.flip(stft_coefficients, axis=0)
-    stft_coefficients = stft_coefficients[(ppm >= 0) & (ppm <= 10), :]
-    stft_coefficients = stft_coefficients / (np.max(np.abs(stft_coefficients)))
 
-    return stft_coefficients
+    stft_coefficients_ordered = np.concatenate([np.split(stft_coefficients, 2)[1],
+                                                np.split(stft_coefficients, 2)[0]])
+    stft_coefficients_ordered = np.flip(stft_coefficients_ordered, axis=0)
+    stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0) & (ppm <= 10), :]
+    stft_coefficients_onesided_norm = stft_coefficients_onesided / (np.max(np.abs(stft_coefficients_onesided)))
+
+    return stft_coefficients_onesided_norm
 
 
 class ReadDatasets:
