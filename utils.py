@@ -62,7 +62,7 @@ def normalized_stft(fid, fs, larmorfreq, window_size, hop_size, window='hann', n
     stft_coefficients_ordered = np.concatenate([np.split(stft_coefficients, 2)[1],
                                                 np.split(stft_coefficients, 2)[0]])
     stft_coefficients_ordered = np.flip(stft_coefficients_ordered, axis=0)
-    stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0) & (ppm <= 10), :]
+    stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0), :]
     stft_coefficients_onesided_norm = stft_coefficients_onesided / (np.max(np.abs(stft_coefficients_onesided)))
 
     return stft_coefficients_onesided_norm
