@@ -58,13 +58,14 @@ class DatasetThreeChannelSpectrogram(Dataset):
         fids = tm.fids
         return fids
 
-    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor, torch.Tensor, str):
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor, torch.Tensor, float, str):
 
         path_sample = os.path.join(self.path_data, self.file_list[idx])
         filename = os.path.basename(path_sample)
 
         transients, target_spectrum, ppm, fs, tacq, larmorfreq = ReadDatasets.read_h5_complete(path_sample)
-        target_spectrum /= np.max(np.abs(target_spectrum))
+        constant_factor = np.max(np.abs(target_spectrum))
+        target_spectrum /= constant_factor
 
         t = np.arange(0, tacq, 1 / fs)
 
@@ -105,4 +106,4 @@ class DatasetThreeChannelSpectrogram(Dataset):
         three_channels_spectrogram = torch.concat([spectrogram1, spectrogram2, spectrogram3])
 
         return three_channels_spectrogram.type(torch.FloatTensor), target_spectrum.type(
-            torch.FloatTensor), ppm, filename
+            torch.FloatTensor), ppm, constant_factor, filename

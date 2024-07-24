@@ -6,7 +6,7 @@ Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
 import numpy as np
 
 
-def calculate_metrics(x, y, ppm):
+def calculate_metrics(x, y, ppm, mse_norm=True, mse_range="challenge"):
     x = np.real(x)
     y = np.real(y)
 
@@ -16,7 +16,7 @@ def calculate_metrics(x, y, ppm):
     shape_score = []
 
     for i in range(x.shape[0]):
-        mse.append(calculate_mse(x[i, :], y[i, :], ppm[i, :]))
+        mse.append(calculate_mse(x[i, :], y[i, :], ppm[i, :], mse_norm=mse_norm, mse_range=mse_range))
 
         snr.append(calculate_snr(x[i, :], ppm[i, :]))
 
@@ -34,17 +34,23 @@ def calculate_metrics(x, y, ppm):
     return output
 
 
-def calculate_mse(x, y, ppm):
-    max_ind = np.amax(np.where(ppm >= 2.5))
-    min_ind = np.amin(np.where(ppm <= 4))
+def calculate_mse(x, y, ppm, mse_norm=True, mse_range="challenge"):
+
+    if mse_range == "challenge":
+        max_ind = np.amax(np.where(ppm >= 2.5))
+        min_ind = np.amin(np.where(ppm <= 4))
+    elif mse_range == "gannet":
+        max_ind = np.amax(np.where(ppm >= 2.79))
+        min_ind = np.amin(np.where(ppm <= 4.1))
 
     x_crop = x[min_ind:max_ind]
     y_crop = y[min_ind:max_ind]
 
-    x_crop_norm = (x_crop - x_crop.min()) / (x_crop.max() - x_crop.min())
-    y_crop_norm = (y_crop - y_crop.min()) / (y_crop.max() - y_crop.min())
+    if mse_norm:
+        x_crop = (x_crop - x_crop.min()) / (x_crop.max() - x_crop.min())
+        y_crop = (y_crop - y_crop.min()) / (y_crop.max() - y_crop.min())
 
-    mse = np.square(y_crop_norm - x_crop_norm).mean()
+    mse = np.square(y_crop - x_crop).mean()
 
     return mse
 

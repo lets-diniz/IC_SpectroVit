@@ -50,7 +50,7 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     for i, dataset in enumerate(tqdm(test_loader)):
-        input, target, ppm, filename = dataset
+        input, target, ppm, constant_factor, filename = dataset
         filename = filename[0].split(".")[0]
 
         input = input.to(DEVICE)
@@ -61,7 +61,11 @@ if __name__ == "__main__":
         target = target.numpy()
         ppm = ppm.numpy()
 
-        result = calculate_metrics(prediction, target, ppm)
+        constant_factor = constant_factor[0].numpy()
+        target *= constant_factor
+        prediction *= constant_factor
+
+        result = calculate_metrics(prediction, target, ppm, mse_norm=False, mse_range="gannet")
 
         if i == 0:
             result["filename"] = [filename]
@@ -104,7 +108,7 @@ if __name__ == "__main__":
 
     df.to_csv(os.path.join(save_dir_path, "result_metrics.csv"), index=False)
 
-    print("Challenge Metrics Eval:")
+    print("Metrics Eval:")
     print(f"Mean MSE: {df['mse'].mean()}")
     print(f"Mean SNR: {df['snr'].mean()}")
     print(f"Mean FHWM: {df['linewidth'].mean()}")
