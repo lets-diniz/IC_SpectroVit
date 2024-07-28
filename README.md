@@ -1,17 +1,20 @@
-[![GitHub](https://img.shields.io/badge/MICLab-Spectro_ViT-blue)](https://github.com/MICLab-Unicamp/Spectro-ViT)
+[![GitHub](https://img.shields.io/badge/MICLab-Spectro_ViT-red)](https://github.com/MICLab-Unicamp/Spectro-ViT) [![DOI](https://img.shields.io/badge/DOI-10.1016/j.mri.2024.110219-blue)](https://doi.org/10.1016/j.mri.2024.110219)
+
 
 ## Project Overview
 
 Magnetic Resonance Spectroscopy (MRS) is a non-invasive technique for quantifying metabolite concentrations in vivo, notably useful for measuring gamma-aminobutyric acid (GABA), a key inhibitory neurotransmitter in the brain. Detecting GABA is difficult due to stronger overlapping signals. MEGA-PRESS is a commonly used MRS editing method for accurate GABA measurement, although it faces challenges with low signal-to-noise ratios (SNR). To improve SNR, repeated measurements, or transients, are taken during the scan, resulting in longer scan times. Typically, scans involve 320 transients.
 
-This repository hosts the code for the **Spectro-ViT Deep Learning (DL) model**, which **reconstructs GABA-edited MEGA-PRESS scans using only one-quarter (80 transients)** of the usual number of transients required. Spectro-ViT represents the latest advancement in this field and was the **overall winner of the Edited-MRS Reconstruction Challenge**. The repository provides a robust training framework for GABA-edited MEGA-PRESS reconstruction using the Spectro-ViT model, built on **PyTorch**. Designed for reproducibility, flexibility, and scalability, it allows researchers to easily reproduce the experiments conducted to train the Spectro-ViT model, adapt, and expand the model. Furthermore, it offers the capability to test other DL models tailored to different datasets and experimental configurations.
+This repository hosts the code for the Spectro-ViT Deep Learning (DL) model, which reconstructs GABA-edited MEGA-PRESS scans using only one-quarter (80 transients) of the usual 320 transients required. Spectro-ViT represents the latest advancement in this field and was the overall winner of the Edited-MRS Reconstruction Challenge. The repository provides a robust training framework for GABA-edited MEGA-PRESS reconstruction using the Spectro-ViT model, built on PyTorch. Designed for reproducibility, flexibility, and scalability, it allows researchers to easily reproduce the experiments conducted to train the Spectro-ViT model, adapt, and expand the model. Furthermore, it offers the capability to test other DL models tailored to different datasets and experimental configurations.
 
-![image](https://github.com/MICLab-Unicamp/Spectro-ViT/assets/91618118/098fcee1-ecb7-4547-99a3-71422d2580f0)
+![Captura de tela de 2024-07-28 10-55-12](https://github.com/user-attachments/assets/09f31a54-1f85-4b8d-8273-13ab05feb572)
 
-*Figure 1: Model architecture.*
 
-For more information about the Edited-MRS Reconstruction Challenge, visit the [challenge webpage](https://sites.google.com/view/edited-mrs-rec-challenge/home?authuser=0). Check the [journal publication](https://link.springer.com/article/10.1007/s10334-024-01156-9) documenting the challenge results. To access our trained weights and perform our model's inferences submitted in the challenge, visit the [GitHub repository from our team, Deep Spectral Divers](https://github.com/MICLab-Unicamp/MICLab-2023-ISBI-MRS-Challenge).
+*Figure 1: Model architecture. Source: https://doi.org/10.1016/j.mri.2024.110219*
 
+Our work on the Spectro-ViT model has been published in the Magnetic Resonance Imaging journal. You can find the full publication at this [DOI link](https://doi.org/10.1016/j.mri.2024.110219).
+
+For more information about the Edited-MRS Reconstruction Challenge, visit the [challenge webpage](https://sites.google.com/view/edited-mrs-rec-challenge/home?authuser=0). Check the [journal publication](https://link.springer.com/article/10.1007/s10334-024-01156-9) documenting the challenge results. 
 
 
 ## Features
@@ -163,13 +166,11 @@ python evaluate.py configs/config_spectro_vit.yaml weights/SpectroViT.pt
 
 ## Citation
 
-Edited-MRS Reconstruction Challenge citation:
-
-      @article{berto2024results,
-        title={Results of the 2023 ISBI challenge to reduce GABA-edited MRS acquisition time},
-        author={Berto, Rodrigo Pommot and Bugler, Hanna and Dias, Gabriel and Oliveira, Mateus and Ueda, Lucas and Dertkigil, Sergio and Costa, Paula DP and Rittner, Leticia and Merkofer, Julian P and van de Sande, Dennis MJ and others},
-        journal={Magnetic Resonance Materials in Physics, Biology and Medicine},
-        pages={1--15},
-        year={2024},
-        publisher={Springer}
-      }
+    @article{DIAS2024,
+    title = {Spectro-ViT: A vision transformer model for GABA-edited MEGA-PRESS reconstruction using spectrograms},
+    journal = {Magnetic Resonance Imaging},
+    pages = {110219},
+    year = {2024},
+    doi = {https://doi.org/10.1016/j.mri.2024.110219},
+    author = {Gabriel Dias and Rodrigo Pommot Berto and Mateus Oliveira and Lucas Ueda and Sergio Dertkigil and Paula D.P. Costa and Amirmohammad Shamaei and Hanna Bugler and Roberto Souza and Ashley Harris and Leticia Rittner}
+    }
