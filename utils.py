@@ -52,20 +52,22 @@ def normalized_stft(fid, fs, larmorfreq, window_size, hop_size, window='hann', n
         raise ValueError("signal windowing fails Non-zero Overlap Add (NOLA) criterion; "
                          "STFT not invertible")
 
-    f, t, stft_coefficients = signal.stft(fid, fs=fs, nperseg=window_size, noverlap=noverlap,
+    f, t, stft_coefficients = signal.stft(fid, fs=fs, nperseg=window_size, window=window, noverlap=noverlap,
                                           nfft=nfft, return_onesided=False)
 
     f = np.concatenate([np.split(f, 2)[1],
                         np.split(f, 2)[0]])
-    ppm = 4.65 + f / larmorfreq
+    #ppm = 4.65 + f / larmorfreq
 
     stft_coefficients_ordered = np.concatenate([np.split(stft_coefficients, 2)[1],
                                                 np.split(stft_coefficients, 2)[0]])
     stft_coefficients_ordered = np.flip(stft_coefficients_ordered, axis=0)
-    stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0), :]
-    stft_coefficients_onesided_norm = stft_coefficients_onesided / (np.max(np.abs(stft_coefficients_onesided)))
+    #stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0), :]
+    #stft_coefficients_onesided_norm = stft_coefficients_onesided / (np.max(np.abs(stft_coefficients_onesided)))
+    stft_coefficients_ordered = stft_coefficients_ordered / (np.max(np.abs(stft_coefficients_ordered)))
 
-    return stft_coefficients_onesided_norm
+    #return stft_coefficients_onesided_norm
+    return stft_coefficients_ordered
 
 
 class ReadDatasets:
@@ -87,7 +89,7 @@ class ReadDatasets:
         with h5py.File(filename) as hf:
             ppm = hf["ppm"][()]
             t = hf["t"][()]
-            transients = hf["transients"][()]
+            transients = hf["ground_truth_fids"][()]
 
         return transients, ppm, t
 
