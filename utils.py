@@ -86,7 +86,7 @@ def normalized_stft(
 
 
 def get_normalized_spgram(
-    fid, fs, larmorfreq, linear_shift, window_size, hop_size, window, nfft=None
+    fid, fs, larmorfreq, linear_shift, window_size, hop_size, window, nfft=None,SFT=None
 ):
 
     noverlap = window_size - hop_size
@@ -98,14 +98,15 @@ def get_normalized_spgram(
     if nfft == None:
         nfft = window_size
 
-    SFT = signal.ShortTimeFFT(
-        win=window,
-        hop=hop_size,
-        fs=fs,
-        mfft=nfft,
-        scale_to="magnitude",
-        fft_mode="centered",
-    )
+    if SFT == None:
+        SFT = signal.ShortTimeFFT(
+            win=window,
+            hop=hop_size,
+            fs=fs,
+            mfft=nfft,
+            scale_to="magnitude",
+            fft_mode="centered",
+        )
     t_lo, t_hi, f_lo, f_hi = SFT.extent(fid.shape[0])
 
     stft_coefficients = SFT.stft(fid)
