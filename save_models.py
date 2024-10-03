@@ -20,7 +20,7 @@ class SaveBestModel:
                 {
                     "model_state_dict": model.state_dict(),
                 },
-                f"{self.dir_model}{name_model}",
+                f"{self.dir_model}{name_model}.pt",
             )
 
             if wandb_run is not None:

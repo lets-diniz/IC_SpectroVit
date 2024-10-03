@@ -13,7 +13,7 @@ def valid_on_the_fly(model, epoch, val_dataset, save_dir_path, filename, device)
     model.eval()
 
     random_index = random.randint(0, len(val_dataset) - 1)
-    input_, target, ppm, _, filename = val_dataset[random_index]
+    input_, target, ppm, _, _ = val_dataset[random_index]
     input_ = torch.unsqueeze(input_, dim=0).to(device)
 
     prediction = model(input_)
