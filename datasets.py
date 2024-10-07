@@ -11,8 +11,8 @@ import numpy as np
 import torch
 from data_augmentation import TransientMaker
 from pre_processing import PreProcessing
-from torch_snippets import Dataset
 from scipy.signal import ShortTimeFFT
+from torch_snippets import Dataset
 from utils import ReadDatasets, get_Hz_ppm_conversion, zero_padding
 
 
@@ -96,7 +96,6 @@ class DatasetThreeChannelSpectrogram(Dataset):
         else:
             fid_off, fid_on = transients[:, 0, :], transients[:, 1, :]
 
-
         spectrogram1 = PreProcessing.spectrogram_channel(
             fid_off=fid_off[:, 0:14],
             fid_on=fid_on[:, 0:14],
@@ -156,7 +155,7 @@ class DatasetSpgramSyntheticData(Dataset):
         linear_shift=None,
         hop_size=None,
         window_size=None,
-        window=None
+        window=None,
     ):
 
         self.path_data = path_data
@@ -195,12 +194,14 @@ class DatasetSpgramSyntheticData(Dataset):
 
         if hop_size is not None and window_size is not None and window is not None:
             if window.shape[0] == window_size:
-                self.SFT = ShortTimeFFT(win=window,
-                                    hop=hop_size,
-                                    fs=self.fs,
-                                    mfft=window_size,
-                                    scale_to="magnitude",
-                                    fft_mode="centered")
+                self.SFT = ShortTimeFFT(
+                    win=window,
+                    hop=hop_size,
+                    fs=self.fs,
+                    mfft=window_size,
+                    scale_to="magnitude",
+                    fft_mode="centered",
+                )
                 self.hop_size = hop_size
                 self.window_size = window_size
                 self.window = window
@@ -243,17 +244,17 @@ class DatasetSpgramSyntheticData(Dataset):
             noise_level_base=6, noise_level_scan_var=2
         )
         aug_fids = transientmkr.fids
-        
+
         spectrogram1 = PreProcessing.spgram_channel(
             fid_off=aug_fids[0, :, 0, 0:14],
             fid_on=aug_fids[0, :, 1, 0:14],
             fs=self.fs,
             larmorfreq=self.larmorfreq,
             linear_shift=self.linear_shift,
-            hop_size=self.hop_size, 
-            window_size=self.window_size, 
-            window=self.window, 
-            SFT=self.SFT
+            hop_size=self.hop_size,
+            window_size=self.window_size,
+            window=self.window,
+            SFT=self.SFT,
         )
 
         spectrogram2 = PreProcessing.spgram_channel(
@@ -262,10 +263,10 @@ class DatasetSpgramSyntheticData(Dataset):
             fs=self.fs,
             larmorfreq=self.larmorfreq,
             linear_shift=self.linear_shift,
-            hop_size=self.hop_size, 
-            window_size=self.window_size, 
-            window=self.window, 
-            SFT=self.SFT
+            hop_size=self.hop_size,
+            window_size=self.window_size,
+            window=self.window,
+            SFT=self.SFT,
         )
 
         spectrogram3 = PreProcessing.spgram_channel(
@@ -274,19 +275,19 @@ class DatasetSpgramSyntheticData(Dataset):
             fs=self.fs,
             larmorfreq=self.larmorfreq,
             linear_shift=self.linear_shift,
-            hop_size=self.hop_size, 
-            window_size=self.window_size, 
-            window=self.window, 
-            SFT=self.SFT
+            hop_size=self.hop_size,
+            window_size=self.window_size,
+            window=self.window,
+            SFT=self.SFT,
         )
 
         if self.get_item_first_time == True:
-            print('Generating Spectrograms of size: ', spectrogram1.shape)
+            print("Generating Spectrograms of size: ", spectrogram1.shape)
 
         spectrogram1 = zero_padding(spectrogram1)
         spectrogram1 = spectrogram1[np.newaxis, ...]
         if self.get_item_first_time == True:
-            print('Zero padded to shape: ', spectrogram1.shape)
+            print("Zero padded to shape: ", spectrogram1.shape)
             self.get_item_first_time = False
         spectrogram1 = torch.from_numpy(np.real(spectrogram1))
 
