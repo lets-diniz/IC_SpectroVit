@@ -217,10 +217,10 @@ class DatasetSpgramSyntheticData(Dataset):
             self.window = None
 
         if self.augment == True:
-            self.idx_data = np.empty(200 * (self.end_pos - self.start_pos), dtype="int")
+            self.idx_data = np.empty(100 * (self.end_pos - self.start_pos), dtype="int")
             for i in range(self.start_pos, self.end_pos):
-                for j in range(200):
-                    self.idx_data[200 * i + j] = i
+                for j in range(100):
+                    self.idx_data[100 * i + j] = i
 
         else:
             self.idx_data = np.arange(self.start_pos, self.end_pos)
