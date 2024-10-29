@@ -6,7 +6,7 @@ Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
 import numpy as np
 from scipy.signal import ShortTimeFFT
 from scipy.signal.windows import hann
-from utils import get_normalized_spgram, normalized_stft
+from utils import get_normalized_spgram, normalized_stft, get_normalized_spgram_old_STFT
 
 
 class PreProcessing:
@@ -67,3 +67,32 @@ class PreProcessing:
         )
 
         return spectrogram
+    
+
+    def spgram_channel_old_STFT(fid_off, fid_on, fs, larmorfreq, linear_shift, hop_size=None, window_size=None, window=None) -> np.ndarray:
+
+            fid_diff = fid_on - fid_off
+            fid_result = np.mean(fid_diff, axis=1)
+            
+            if (hop_size == None):
+                if fid_result.shape[0] == 2048:
+                    hop_size = 10
+                elif fid_result.shape[0] == 4096:
+                    hop_size = 64        
+            if (window_size == None):
+                window_size=256
+                window = hann(window_size, sym=True)
+            
+
+            spectrogram = get_normalized_spgram_old_STFT(
+                fid=fid_result,
+                fs=fs,
+                larmorfreq=larmorfreq,
+                linear_shift=linear_shift,
+                window_size=window_size,
+                hop_size=hop_size,
+                window=window,
+            )
+
+            return spectrogram
+

@@ -95,10 +95,9 @@ def run_validation(model, criterion, loader, epoch, device, epsilon=1e-10):
                 input_ = input_.to(device)
                 target = target.to(device)
                 ppm = ppm.to(device)
-
                 prediction = model(input_)
                 loss = criterion(prediction, target, ppm)
-
+                
                 prediction = prediction.cpu().numpy()
                 target = target.cpu().numpy()
                 ppm = ppm.cpu().numpy()

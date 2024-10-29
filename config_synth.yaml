@@ -1,0 +1,73 @@
+model:
+  name_model: "model_hop_10_3500GT"
+  dir_save_results: "../model_hop_10_3500GT/"
+  new_model: True
+  path_to_saved_model: ""
+
+data:
+  data_folder: "../simulated_ground_truths.h5"
+  start_point_train_data: 0
+  end_point_train_data: 3500
+  augment_with_noise_train: True
+  augment_with_idx_repetition_train: True
+  qntty_to_augment_by_idx_train: 2
+  start_point_validation_data: 3500
+  end_point_validation_data: 3700
+  augment_with_noise_validation: True
+  augment_with_idx_repetition_validation: False
+  hop_size: 10
+  random_augment:
+      amplitude:
+        noise_level_base:
+          max: 20
+          min: 2
+        noise_level_scan_var:
+          max: 2
+          min: 0
+      frequency:
+        noise_level_base:
+          max: 40
+          min: 2
+        noise_level_scan_var:
+          max: 2
+          min: 0
+      phase:
+        noise_level_base:
+          max: 40
+          min: 2
+        noise_level_scan_var:
+          max: 2
+          min: 0
+
+training:
+  batch_size_train: 100
+  batch_size_validation: 6
+  n_epochs: 30
+
+loss: "RangeMAELoss"
+
+optimizer:
+  Adam:
+    lr: 0.0001
+  path_to_saved_optimizer: ""
+
+lr_scheduler:
+  activate: True
+  path_to_saved_scheduler: ""
+  scheduler_type: "cosineannealinglr"
+  epoch_to_switch_to_lr_scheduler: 20
+  initial_lr_scheduler: 0.00001
+  info:
+    T_max: 10
+    eta_min: 0.000001
+  
+
+save_models_and_results:
+  step_to_safe_save_models: 5
+  step_for_saving_plots: 3
+  save_best_model: True
+
+wandb:
+  activate: False
+
+

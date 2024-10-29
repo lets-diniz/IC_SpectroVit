@@ -6,9 +6,10 @@ Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
 from losses import RangeMAELoss
 from utils import set_device
 from models import SpectroViT
-from save_models import SaveBestModel
-from datasets import DatasetThreeChannelSpectrogram
+from save_models import SaveBestModel, SaveBestModelState, SaveLossesAndMetrics
+from datasets import DatasetThreeChannelSpectrogram, DatasetSpgramSyntheticData, DatasetSpgramSyntheticDataOldSTFT
 import torch
+from scipy import signal,stats
 
 save_best_model = SaveBestModel()
 
@@ -19,7 +20,9 @@ FACTORY_DICT = {
         "SpectroViT": SpectroViT,
     },
     "dataset": {
-        "DatasetThreeChannelSpectrogram": DatasetThreeChannelSpectrogram
+        "DatasetThreeChannelSpectrogram": DatasetThreeChannelSpectrogram,
+        "DatasetSpgramSyntheticData": DatasetSpgramSyntheticData,
+        "DatasetSpgramSyntheticDataOldSTFT": DatasetSpgramSyntheticDataOldSTFT
     },
     "optimizer": {
         "Adam": torch.optim.Adam,
@@ -28,4 +31,14 @@ FACTORY_DICT = {
     "loss": {
         "RangeMAELoss": RangeMAELoss
     },
+    "spgram_window":{
+        "window_size": 256,
+        "window": signal.windows.hann(256,sym = True)
+    },
+    "savebest":{
+        "SaveBestModelState": SaveBestModelState
+    },
+    "savelossesandmetrics":{
+        "SaveLossesAndMetrics": SaveLossesAndMetrics
+    }
 }

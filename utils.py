@@ -10,7 +10,8 @@ import numpy as np
 import torch
 import yaml
 from scipy import signal
-
+import csv
+import matplotlib.pyplot as plt
 
 def set_device():
     if torch.cuda.is_available():
@@ -82,7 +83,7 @@ def normalized_stft(
         np.max(np.abs(stft_coefficients_onesided))
     )
 
-    return stft_coefficients_onesided_norm, f, ppm, t
+    return stft_coefficients_onesided_norm
 
 
 def get_normalized_spgram(
@@ -120,13 +121,49 @@ def get_normalized_spgram(
     stft_coefficients = stft_coefficients[:, zero_idx:one_idx]
 
     # opt 1: Gab
-    # stft_coefficients_ordered = np.flip(stft_coefficients, axis=0)
-    # stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0), :]
+    #stft_coefficients_ordered = np.flip(stft_coefficients, axis=0)
+    #stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0), :]
     # opt 2:
     stft_coefficients_onesided = stft_coefficients[(ppm >= 0), :]
     stft_coefficients_onesided = np.flip(stft_coefficients_onesided, axis=0)
     # opt 3:
     # stft_coefficients_onesided = np.flip(stft_coefficients, axis=0)
+    stft_coefficients_onesided_norm = stft_coefficients_onesided / (
+        np.max(np.abs(stft_coefficients_onesided))
+    )
+
+    return stft_coefficients_onesided_norm
+
+def get_normalized_spgram_old_STFT(
+    fid, fs, larmorfreq, linear_shift, window_size, hop_size, window, nfft=None
+):
+    noverlap = window_size - hop_size
+
+    if not signal.check_NOLA(window, window_size, noverlap):
+        raise ValueError(
+            "signal windowing fails Non-zero Overlap Add (NOLA) criterion; "
+            "STFT not invertible"
+        )
+
+    f, t, stft_coefficients = signal.stft(
+        fid,
+        fs=fs,
+        nperseg=window_size,
+        window=window,
+        noverlap=noverlap,
+        nfft=nfft,
+        return_onesided=False,
+    )
+
+    f = np.concatenate([np.split(f, 2)[1], np.split(f, 2)[0]])
+    ppm = linear_shift + f / larmorfreq
+
+    stft_coefficients_ordered = np.concatenate(
+        [np.split(stft_coefficients, 2)[1], np.split(stft_coefficients, 2)[0]]
+    )
+    #maybe I change this if I have time to test this option... the flip order 
+    stft_coefficients_ordered = np.flip(stft_coefficients_ordered, axis=0)
+    stft_coefficients_onesided = stft_coefficients_ordered[(ppm >= 0), :]
     stft_coefficients_onesided_norm = stft_coefficients_onesided / (
         np.max(np.abs(stft_coefficients_onesided))
     )
@@ -258,9 +295,12 @@ def get_Hz_ppm_conversion(gt_fids, dwelltime, ppm):
     spectra_gt_fids = np.fft.fftshift(
         np.fft.fft(gt_fids, n=gt_fids.shape[1], axis=1), axes=1
     )
-    spectra_gt_diff = spectra_gt_fids[:, :, 1] - spectra_gt_fids[:, :, 0]
+    if len(spectra_gt_fids.shape) == 4:
+        spectra_gt_diff = np.mean(spectra_gt_fids[:, :, 1,:] - spectra_gt_fids[:, :, 0,:],axis=-1)
+    else:
+        spectra_gt_diff = spectra_gt_fids[:, :, 1] - spectra_gt_fids[:, :, 0]
     freq = np.flip(np.fft.fftshift(np.fft.fftfreq(gt_fids.shape[1], d=dwelltime)))
-    # to get ppm axis
+    # to get ppm axis   
     idx_min = np.real(spectra_gt_diff[0, :]).argmin()
     idx_max = np.real(spectra_gt_diff[0, :]).argmax()
     # p = a*f + b
@@ -277,3 +317,29 @@ def get_Hz_ppm_conversion(gt_fids, dwelltime, ppm):
         raise ValueError("Larmor frequency can't be infinit.")
     else:
         return (1 / a), b
+    
+
+def retrieve_metrics_from_csv(path_file):
+    with open(path_file, mode ='r') as file:
+        csvFile = csv.reader(file)
+        dict_metrics = {}
+        names = []
+        for idx, line in enumerate(csvFile):
+            if idx == 0:
+                for element in line:
+                    dict_metrics[element] = []
+                    names.append(element)
+            else:
+                for idx_in_line, element in enumerate(line):
+                    dict_metrics[names[idx_in_line]].append(float(element))
+    return dict_metrics
+
+def plot_training_evolution(path,train_loss_list,val_loss_list):
+    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+    ax.plot(train_loss_list, label='Train')
+    ax.plot(val_loss_list, label='Validation')
+    ax.legend(loc='upper right')
+    ax.set_title('Training Evolution')
+    ax.set_xlabel('Epochs')
+    plt.savefig(path+'losses_evolution.png')
+    plt.close()
