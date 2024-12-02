@@ -3,11 +3,11 @@ Maintainer: Gabriel Dias (g172441@dac.unicamp.br)
             Mateus Oliveira (m203656@dac.unicamp.br)
 """
 
-from losses import RangeMAELoss
+from losses import RangeMAELoss, RangeMAELossPPMVary
 from utils import set_device
 from models import SpectroViT
 from save_models import SaveBestModel, SaveBestModelState, SaveLossesAndMetrics
-from datasets import DatasetThreeChannelSpectrogram, DatasetSpgramSyntheticData, DatasetSpgramSyntheticDataOldSTFT
+from datasets import *
 import torch
 from scipy import signal,stats
 
@@ -22,14 +22,17 @@ FACTORY_DICT = {
     "dataset": {
         "DatasetThreeChannelSpectrogram": DatasetThreeChannelSpectrogram,
         "DatasetSpgramSyntheticData": DatasetSpgramSyntheticData,
-        "DatasetSpgramSyntheticDataOldSTFT": DatasetSpgramSyntheticDataOldSTFT
+        "DatasetSpgramSyntheticDataOldSTFT": DatasetSpgramSyntheticDataOldSTFT,
+        "DatasetSpgramRealData": DatasetSpgramRealData,
+        "DatasetSpgramRealDataOldSTFT": DatasetSpgramRealDataOldSTFT,
     },
     "optimizer": {
         "Adam": torch.optim.Adam,
         "SGD": torch.optim.SGD
     },
     "loss": {
-        "RangeMAELoss": RangeMAELoss
+        "RangeMAELoss": RangeMAELoss,
+        "RangeMAELossPPMVary": RangeMAELossPPMVary
     },
     "spgram_window":{
         "window_size": 256,

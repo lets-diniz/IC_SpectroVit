@@ -1,0 +1,39 @@
+device: 'cpu'
+
+test_name: 'test_models_trained_real_data_track2n3_noisemod'
+
+test_dataset:
+  path: '../dataset_test_realdata_augmented_from_tracks2and3.h5'
+  type: 'DatasetSpgramRealData'
+
+
+hop_values:
+        - 10
+        - 14
+        - 18
+        - 22
+        - 26
+        - 30
+        - 34
+
+model_names: 
+        - '../model_hop_10_realdata_track2n3_noisemod_phcorr/models/model_hop_10_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_14_realdata_track2n3_noisemod_phcorr/models/model_hop_14_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_18_realdata_track2n3_noisemod_phcorr/models/model_hop_18_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_22_realdata_track2n3_noisemod_phcorr/models/model_hop_22_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_26_realdata_track2n3_noisemod_phcorr/models/model_hop_26_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_30_realdata_track2n3_noisemod_phcorr/models/model_hop_30_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_34_realdata_track2n3_noisemod_phcorr/models/model_hop_34_realdata_track2n3_noisemod_phcorr_best.pt'
+
+model_nicknames:
+        - 'vit_10'
+        - 'vit_14'
+        - 'vit_18'
+        - 'vit_22'
+        - 'vit_26'
+        - 'vit_30'
+        - 'vit_34'
+
+
+show_results_for_each_hop: True
+show_results_for_all_hops_combined: True

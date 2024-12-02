@@ -14,7 +14,7 @@ from models import SpectroViT
 from lr_scheduler import CustomLRScheduler
 from main_functions_adapted import valid_on_the_fly, run_train_epoch, run_validation
 from main import calculate_parameters
-from utils import clean_directory, read_yaml, retrieve_metrics_from_csv, plot_training_evolution
+from utils import clean_directory, read_yaml, retrieve_metrics_from_csv, plot_training_evolution, plot_metrics_evolution
 from save_models import safe_save, delete_safe_save, save_trained_model
 from constants import *
 
@@ -50,6 +50,9 @@ augment_by_noise_kwargs = config['data'].get('random_augment',{})
 hop_size = config['data']['hop_size']
 window_size = FACTORY_DICT["spgram_window"]["window_size"]
 window = FACTORY_DICT["spgram_window"]["window"]
+
+#dataset type
+dataset_type = config.get('dataset',"DatasetSpgramSyntheticData")
 
 #training
 batch_size_train = int(config['training']['batch_size_train'])
@@ -122,7 +125,8 @@ if use_wandb is True:
 
 
 ####----------------------Preparing objects-----------------------------------
-dataset_train = FACTORY_DICT["dataset"]["DatasetSpgramSyntheticData"](path_data=data_folder,
+print('Using dataset:',dataset_type)
+dataset_train = FACTORY_DICT["dataset"][dataset_type](path_data=data_folder,
                                                                       augment_with_noise=augment_with_noise_train,
                                                                       augment_with_idx_repetition=augment_with_idx_repetition_train,
                                                                       start=start_point_train_data,
@@ -133,7 +137,7 @@ dataset_train = FACTORY_DICT["dataset"]["DatasetSpgramSyntheticData"](path_data=
                                                                       qntty_to_augment_by_idx=qntty_to_augment_by_idx_train,
                                                                       **augment_by_noise_kwargs)
 
-dataset_validation = FACTORY_DICT["dataset"]["DatasetSpgramSyntheticData"](path_data=data_folder,
+dataset_validation = FACTORY_DICT["dataset"][dataset_type](path_data=data_folder,
                                                                       augment_with_noise=augment_with_noise_validation,
                                                                       augment_with_idx_repetition=augment_with_idx_repetition_validation,
                                                                       start=start_point_validation_data,
@@ -224,7 +228,7 @@ for epoch in range(n_epochs):
     save_losses_and_metrics(train_loss_list=train_loss_list,
                             val_loss_list=val_loss_list,
                             val_mean_mse_list=val_mean_mse_list,
-                            val_mean_snr_list=val_mean_mse_list,
+                            val_mean_snr_list=val_mean_snr_list,
                             val_mean_linewidth_list=val_mean_linewidth_list,
                             val_mean_shape_score_list=val_mean_shape_score_list,
                             score_challenge_list=score_challenge_list)
@@ -249,12 +253,22 @@ if new_model is True:
   plot_training_evolution(path=save_dir_path,
                           train_loss_list=train_loss_list,
                           val_loss_list=val_loss_list)
+  plot_metrics_evolution(path=save_dir_path,
+                           val_mean_mse_list=val_mean_mse_list,
+                           val_mean_snr_list=val_mean_snr_list,
+                           val_mean_linewidth_list=val_mean_linewidth_list,
+                           val_mean_shape_score_list=val_mean_shape_score_list)
 else:
   if os.path.isfile(save_dir_path+'losses_and_metrics.csv'):
     metrics = retrieve_metrics_from_csv(path_file=save_dir_path+'losses_and_metrics.csv')
     plot_training_evolution(path=save_dir_path,
                           train_loss_list=metrics["LossTrain"],
                           val_loss_list=metrics["LossVal"])
+    plot_metrics_evolution(path=save_dir_path,
+                           val_mean_mse_list=metrics['MSEVal'],
+                           val_mean_snr_list=metrics['SNRVal'],
+                           val_mean_linewidth_list=metrics['FWHMVal'],
+                           val_mean_shape_score_list=metrics['ShScVal'])
 
 
   

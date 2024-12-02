@@ -1,0 +1,76 @@
+model:
+  name_model: "model_hop_10_realdata_track2_less_noisemod"
+  dir_save_results: "../model_hop_10_realdata_track2_less_noisemod/"
+  new_model: True
+  path_to_saved_model: ""
+
+data:
+  data_folder: "../track_02_training_data.h5"
+  start_point_train_data: 0
+  end_point_train_data: 7
+  augment_with_noise_train: True
+  augment_with_idx_repetition_train: True
+  qntty_to_augment_by_idx_train: 300
+  start_point_validation_data: 7
+  end_point_validation_data: 9
+  augment_with_noise_validation: False
+  augment_with_idx_repetition_validation: True
+  qntty_to_augment_by_idx_validation: 50
+  hop_size: 10
+  random_augment:
+      amplitude:
+        noise_level_base:
+          max: 4
+          min: 0
+        noise_level_scan_var:
+          max: 2
+          min: 0
+      frequency:
+        noise_level_base:
+          max: 2
+          min: 0
+        noise_level_scan_var:
+          max: 2
+          min: 0
+      phase:
+        noise_level_base:
+          max: 2
+          min: 0
+        noise_level_scan_var:
+          max: 2
+          min: 0
+
+dataset: "DatasetSpgramRealData"
+
+training:
+  batch_size_train: 100
+  batch_size_validation: 6
+  n_epochs: 30
+
+loss: "RangeMAELossPPMVary"
+
+optimizer:
+  Adam:
+    lr: 0.0001
+  path_to_saved_optimizer: ""
+
+lr_scheduler:
+  activate: True
+  path_to_saved_scheduler: ""
+  scheduler_type: "cosineannealinglr"
+  epoch_to_switch_to_lr_scheduler: 20
+  initial_lr_scheduler: 0.00001
+  info:
+    T_max: 10
+    eta_min: 0.000001
+  
+
+save_models_and_results:
+  step_to_safe_save_models: 5
+  step_for_saving_plots: 3
+  save_best_model: True
+
+wandb:
+  activate: False
+
+

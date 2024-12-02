@@ -1,6 +1,6 @@
 model:
-  name_model: "model_hop_10_3500GT"
-  dir_save_results: "../model_hop_10_3500GT/"
+  name_model: "model_hop_10_3500GT_gab"
+  dir_save_results: "../model_hop_10_3500GT_gab/"
   new_model: True
   path_to_saved_model: ""
 
@@ -38,6 +38,8 @@ data:
         noise_level_scan_var:
           max: 2
           min: 0
+
+dataset: "DatasetSpgramSyntheticDataOldSTFT"
 
 training:
   batch_size_train: 100

@@ -1,0 +1,50 @@
+Dados sample_data.h5:
+
+Treino: 0 - 64 (augment = 100 -> 6400)
+Validação: 84-108
+Teste: 110 - 200
+
+Usado para:
+modelos do tipo: /home/leticia/Documentos/ProjetoIC/SpectroVit/model_hop_X_mfft_256
+(só adição de ruído aditivo)
+modelos do tipo: /home/leticia/Documentos/ProjetoIC/SpectroVit/model_hop_X_multiplenoise
+(adição de ruído de frequencia, fase e amplitude)
+Dados de teste: dataset_test_multiplenoise_from_samples_110_to_200
+
+-----------------------------------------------------------------------------------------
+
+Dados simulated_ground_truths.h5:
+
+Treino: 0 - 3500 (augment = 4 -> 14000)
+Validação: 3500-3700
+Teste: 4000 - 5000 
+
+Usado para:
+modelos do tipo: /home/leticia/Documentos/ProjetoIC/SpectroVit/model_hop_X_3500GT
+Dados de teste: dataset_test_multiplenoise_from_SGT_4000_to_5000
+
+-----------------------------------------------------------------------------------------
+
+Dados track02_training_data.h5:
+
+Treino: 0 - 7 (augment = 200 -> 1400)
+Validação: 7-9 (augment = 50 -> 100)
+Teste: 9-12 (augment = 50 -> 150)
+
+Usado para:
+modelos do tipo: /home/leticia/Documentos/ProjetoIC/SpectroVit/model_hop_X_realdata_noise
+Dados de teste: dataset_test_realdata_augmented_from_RD_9_to_12
+
+-----------------------------------------------------------------------------------------
+
+Dados track02_training_data.h5 & track03_training_data.h5:
+
+Treino: track02: 0,1,2,3,4,6,8,10 // track03: 0,1,2,4,6,8,10 (augment = 200 -> 3000)
+Validação:  track02: 5,7 // track03: 3,5 (augment = 50 -> 200)
+Teste: track02: 9,11 // track03: 7,9,11  (augment = 50 -> 250)
+
+Dados de treino: dataset_tracks2and3_training_data
+Dados de teste: dataset_test_realdata_augmented_from_tracks2and3
+
+
+

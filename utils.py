@@ -343,3 +343,26 @@ def plot_training_evolution(path,train_loss_list,val_loss_list):
     ax.set_xlabel('Epochs')
     plt.savefig(path+'losses_evolution.png')
     plt.close()
+
+def plot_metrics_evolution(path,val_mean_mse_list,val_mean_snr_list,
+                            val_mean_linewidth_list,val_mean_shape_score_list):
+    fig, ax = plt.subplots(2, 2, figsize=(16, 10))
+    ax.flat[0].plot(val_mean_linewidth_list)
+    ax.flat[0].set_title('FWHM Evolution')
+    ax.flat[0].set_xlabel('Epochs')
+
+    ax.flat[1].plot(val_mean_shape_score_list)
+    ax.flat[1].set_title('Shape Score Evolution')
+    ax.flat[1].set_xlabel('Epochs')
+
+    ax.flat[2].plot(val_mean_mse_list)
+    ax.flat[2].set_title('MSE Evolution')
+    ax.flat[2].set_xlabel('Epochs')
+    
+    ax.flat[3].plot(val_mean_snr_list)
+    ax.flat[3].set_title('SNR Evolution')
+    ax.flat[3].set_xlabel('Epochs')
+
+    plt.tight_layout()
+    plt.savefig(path+'metrics_evolution.png')
+    plt.close()

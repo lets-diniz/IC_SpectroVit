@@ -9,10 +9,13 @@ import math
 
 class TransientMaker:
 
-    def __init__(self, fids=None, t=None, n_transients=80):
-        self.ground_truth_fids=fids
-        self.fids = np.expand_dims(self.ground_truth_fids,axis=3).copy()
-        self.fids = np.repeat(self.fids,n_transients,axis=3)
+    def __init__(self, fids=None, t=None, n_transients=80, create_transients=True):
+        if create_transients is True:
+            self.ground_truth_fids=fids
+            self.fids = np.expand_dims(self.ground_truth_fids,axis=3).copy()
+            self.fids = np.repeat(self.fids,n_transients,axis=3)
+        else:
+            self.fids = fids
         self.t=t
 
     def add_random_amplitude_noise(self, noise_level_base=10, noise_level_scan_var=3):
