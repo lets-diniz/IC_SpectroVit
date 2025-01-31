@@ -15,7 +15,37 @@ from scipy.signal import ShortTimeFFT
 from torch_snippets import Dataset
 from utils import ReadDatasets, get_Hz_ppm_conversion, zero_padding
 
-
+#---------------------DS ORIGINAL---------------------------
+"""
+Expects to receive path for a folder containing data in separate .h5 files
+with:
+    - transient array of size (2048,2,40) or (4096,2,40)
+    - target spectrum of size (2048)
+    - ppm array (2048)
+    - fs - sampling frequency - (float)
+    - tacq - acquisition time - (float)
+    - larmorfreq - larmor frequency (float)
+Inputs:
+- path_data: path to folder with files
+- kargs with keys: evaluation and random_augment - if evaluation False, use properties in random augment
+                                                    to augment transients by adding noise (amplitude, frequency and phase)
+                    - if random_augment is considered, it should present keys amplitude, frequency and phase, each one
+                        containing dicts: {noise_level_base: {max: value, min: value},
+                                          noise_level_scan_var: {max: value, min: value}}                       
+Returns DS with following structure:
+    - three_channels_spectrogram - 3 channel spectrogram (real part) of size (3, 224, 224) - torch.FloatTensor
+                                    channels: 1- fid 0:14, 2- fid 14:27, 3- fid 27:40
+                                    Spectrograms zero padded
+    - target_spectrum - normalization of target spectrum present in the input file (size: 2048) - torch.FloatTensor
+    - ppm - comes from ppm array present in the input file (size: 2048)
+    - constant_factor - factor of normalization of target spectrum
+    - filename - name of h5 file
+OBS: Uses OLD VERSION of STFT
+OBS: Preprocessing of spectrogram consists of eliminating lines for negative chemical shifts, for this
+considers transformation ppm = f/larmorfreq + 4.65. There's however an error in spectrogram reorganization, so
+some positive lines are also eleiminated. Normalizes spectrogram by the maximum absolute value. Check
+normalized_stft in utils.py for more info.
+"""
 class DatasetThreeChannelSpectrogram(Dataset):
     def __init__(self, **kargs: dict) -> None:
         self.path_data = kargs["path_data"]
@@ -142,7 +172,51 @@ class DatasetThreeChannelSpectrogram(Dataset):
             filename,
         )
 
-
+#---------------------DS FOR SYNTHETIC DATA---------------------------
+"""
+Expects to receive path for unique h5 file
+with:
+    - N transients of size (2048,2) or (2048,2,40)
+    - N ppm arrays of size (2048)
+    - N time arrays of size (2048)
+    - N target  spectrum arrays of size (2048) IF transients are of size (2048,2,40)
+Inputs:
+- path_data: path to h5 file
+- augment_with_noise: bool, if True transients should be of size (2048,2), we then augment the quantity of transients
+                            to have arrays of size (2048,2,40) containing noisy transients derived from the original one
+                            these will latter be combined to form a spectrogram
+- augment_with_idx_repetition: bool, if True, instead of N transients, we work with N*qntty_to_augment_by_idx by repeating
+                               transients index in h5 file
+- start: int, if None, we start considering transients from the first in h5 file, if not None, we consider [start:,]
+- end: int, if None, we consider until the last transient from the h5 file, if not Nne, we consider [,:end]
+- fs: float, if given is the sampling frequency used to define ppm from Hz (for the spectrogram) and in the STFT, if None, we calculate it using time arrays
+- larmorfreq: float, if given is used to define ppm from Hz (ppm = f/larmofreq + linear_shift) (for the spectrogram), 
+                if None, we calculate it from ppm array
+- linear_shift: float, if given is used to define ppm from Hz (ppm = f/larmofreq + linear_shift) (for the spectrogram), 
+                if None, we calculate it from ppm array
+- hop_size: int, if given is the hop used in STFT (if too small one might find errors due to the size limitation 224x224), 
+                if not given is 10 if transients are of size 2048, or 64 if 4096
+- window_size: int, if given is the quantity of frequencies considered in the STFT (if too large might find errors due to the size limitation 224x224),
+               if not given is 256
+- window: if given should be an array of size (window_size) containing the expected window shape, if not given, we use the Hanning window in STFT
+- qntty_to_augment_by_idx: if given and augment_with_idx_repetition is True, is the amount of times we repeat the same transient index in DS
+- **kwargs_augment_by_noise: dict containing the arguments to define the noise added to transients if augment_with_noise is True,
+                                - it should present keys amplitude, frequency and phase, each one
+                                    containing dicts: {noise_level_base: {max: value, min: value},
+                                                    noise_level_scan_var: {max: value, min: value}}                       
+Returns DS with following structure:
+    - three_channels_spectrogram - 3 channel spectrogram (real part) of size (3, 224, 224) - torch.FloatTensor
+                                    channels: 1- fid 0:14, 2- fid 14:27, 3- fid 27:40
+                                    Spectrograms zero padded
+    - target_spectrum - comes from target spectrum present in the input file (1,2048) - torch.FloatTensor
+    - ppm - comes from ppm array present in the input file (1,2048)
+    - constant_factor - factor of normalization of target spectrum
+    - filename - name of h5 file
+OBS: Uses NEW VERSION of STFT
+OBS: Preprocessing of spectrogram consists of eliminating lines for negative chemical shifts, for this
+considers transformation ppm = f/larmorfreq + linear_shift. Normalizes spectrogram by the maximum absolute value. Check
+get_normalized_spgram in utils.py for more info.
+"""
 class DatasetSpgramSyntheticData(Dataset):
     def __init__(
         self,
@@ -166,7 +240,9 @@ class DatasetSpgramSyntheticData(Dataset):
         self.augment_with_idx_repetition = augment_with_idx_repetition
         self.get_item_first_time = True
         self.random_augment = kwargs_augment_by_noise
-
+        
+        #get ppm and fids size, the total amount of transients available in h5 file
+        #get ppm array sample
         with h5py.File(self.path_data) as hf:
             ppm = hf['ppm'][()][:1]
             t = np.empty((1,ppm.shape[-1]))
@@ -193,6 +269,7 @@ class DatasetSpgramSyntheticData(Dataset):
             self.start_pos = 0
             self.end_pos = total_qntty
 
+
         if self.augment_with_idx_repetition is True and qntty_to_augment_by_idx is not None:
             self.qntty_to_augment_by_idx = qntty_to_augment_by_idx
         elif self.augment_with_idx_repetition is True and qntty_to_augment_by_idx is None:
@@ -206,6 +283,7 @@ class DatasetSpgramSyntheticData(Dataset):
         else:
             self.fs = fs
 
+        #get larmorfreq and linear_shift if not given (uses ppm array sample)
         if larmorfreq == None or linear_shift == None:
             a_inv, b = get_Hz_ppm_conversion(
                 gt_fids=fids, dwelltime=1 / self.fs, ppm=ppm
@@ -223,6 +301,7 @@ class DatasetSpgramSyntheticData(Dataset):
             self.larmorfreq = larmorfreq
             self.linear_shift = linear_shift
 
+        #prepare STFT class object if all parameters are available
         if hop_size is not None and window_size is not None and window is not None:
             if window.shape[0] == window_size:
                 self.SFT = ShortTimeFFT(
@@ -247,6 +326,8 @@ class DatasetSpgramSyntheticData(Dataset):
             self.window_size = None
             self.window = None
         
+        #create list of idx of transients considered in file. If we have repetition, we repeat each idx 
+        # qntty_to_augment_by_idx times
         if self.augment_with_idx_repetition is True:
             self.idx_data = np.empty(self.qntty_to_augment_by_idx * (self.end_pos - self.start_pos), dtype="int")
             idx_counter = 0
