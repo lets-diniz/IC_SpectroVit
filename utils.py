@@ -334,7 +334,8 @@ def retrieve_metrics_from_csv(path_file):
                     dict_metrics[names[idx_in_line]].append(float(element))
     return dict_metrics
 
-def plot_training_evolution(path,train_loss_list,val_loss_list):
+def plot_training_evolution(path,train_loss_list,val_loss_list,
+                            score_challenge_list=None):
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
     ax.plot(train_loss_list, label='Train')
     ax.plot(val_loss_list, label='Validation')
@@ -343,6 +344,14 @@ def plot_training_evolution(path,train_loss_list,val_loss_list):
     ax.set_xlabel('Epochs')
     plt.savefig(path+'losses_evolution.png')
     plt.close()
+    if score_challenge_list is not None:
+        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+        ax.plot(score_challenge_list, label='Validation')
+        ax.legend(loc='upper right')
+        ax.set_title('Score Challenge Evolution')
+        ax.set_xlabel('Epochs')
+        plt.savefig(path+'score_ch_evolution.png')
+        plt.close()
 
 def plot_metrics_evolution(path,val_mean_mse_list,val_mean_snr_list,
                             val_mean_linewidth_list,val_mean_shape_score_list):

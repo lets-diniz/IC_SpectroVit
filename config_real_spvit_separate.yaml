@@ -1,21 +1,13 @@
 model:
-  name_model: "model_hop_10_realdata_SpVit_nonoise"
-  dir_save_results: "../model_hop_10_realdata_SpVit_nonoise/"
+  name_model: "model_hop_10_realdata_SpVit_separatefiles_nonoise"
+  dir_save_results: "../model_hop_10_realdata_SpVit_separatefiles_nonoise/"
   new_model: True
   path_to_saved_model: ""
 
 data:
-  data_folder: "../dataset_SpectVit_Paper_training_data.h5"
-  start_point_train_data: 0
-  end_point_train_data: 28
+  data_folder: "../dataset_spectrovit_only_phillips/"
   augment_with_noise_train: False
-  augment_with_idx_repetition_train: True
-  qntty_to_augment_by_idx_train: 500
-  start_point_validation_data: 28
-  end_point_validation_data: 36
   augment_with_noise_validation: False
-  augment_with_idx_repetition_validation: True
-  qntty_to_augment_by_idx_validation: 50
   hop_size: 10
   random_augment:
       amplitude:
@@ -40,7 +32,7 @@ data:
           max: 2
           min: 0
 
-dataset: "DatasetSpgramRealData"
+dataset: "DatasetRealDataSeparateFiles"
 
 training:
   batch_size_train: 100

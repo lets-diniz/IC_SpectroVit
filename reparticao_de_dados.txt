@@ -15,7 +15,7 @@ Dados de teste: dataset_test_multiplenoise_from_samples_110_to_200
 
 Dados simulated_ground_truths.h5:
 
-Treino: 0 - 3500 (augment = 4 -> 14000)
+Treino: 0 - 3500 (augment = 2 -> 7000)
 Validação: 3500-3700
 Teste: 4000 - 5000 
 
@@ -46,5 +46,14 @@ Teste: track02: 9,11 // track03: 7,9,11  (augment = 50 -> 250)
 Dados de treino: dataset_tracks2and3_training_data
 Dados de teste: dataset_test_realdata_augmented_from_tracks2and3
 
+-----------------------------------------------------------------------------------------
+
+Dados dataset_SpectVit_Paper_training_data.h5:
+
+Treino: 0 - 28 (augment = 200 -> 5600)
+Validação:  28 - 36 (augment = 50 -> 400)
+Teste: 0 - 12  (augment = 50 -> 600)
+
+Dados do SpectroVit como os usados pelo Gabriel.
 
 

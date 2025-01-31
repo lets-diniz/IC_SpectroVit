@@ -1153,3 +1153,201 @@ class DatasetSpgramRealDataOldSTFT(Dataset):
             filename,
         )
     
+
+class DatasetRealDataSeparateFiles(Dataset):
+    def __init__(self,
+        path_data,
+        augment_with_noise,
+        start=None,
+        end=None,
+        linear_shift=None,
+        hop_size=None,
+        window_size=None,
+        window=None,
+        **kwargs_augment_by_noise) -> None:
+
+
+        self.path_data = path_data
+        self.augment_with_noise = augment_with_noise
+        self.random_augment = kwargs_augment_by_noise
+
+        file_list = sorted(os.listdir(self.path_data))
+        if start is not None and end is not None:
+            self.file_list = file_list[start:end]
+        elif start is not None and end is None:
+            self.file_list = file_list[start:]
+        elif start is None and end is not None:
+            self.file_list = file_list[:end]
+        else:
+            self.file_list = file_list
+
+        path_sample = os.path.join(self.path_data, self.file_list[0])
+        transients, target_spectrum, ppm, fs, tacq, larmorfreq = (
+            ReadDatasets.read_h5_complete(path_sample)
+        )
+        transients = np.expand_dims(transients, axis=0) 
+        ppm = np.expand_dims(ppm,axis=0)
+
+        self.fs = fs
+
+        a_inv, b = get_Hz_ppm_conversion(
+                gt_fids=transients, dwelltime=1/self.fs, ppm=ppm
+                )
+        if (round(a_inv) == round(larmorfreq)) and linear_shift == None:
+            self.larmorfreq = larmorfreq
+            self.linear_shift = b
+        elif (round(a_inv) != round(larmorfreq)) and linear_shift == None:
+            raise ValueError('no match between larmorfreq given and calculated. given: '+str(round(larmorfreq))+
+                             'calculated: '+str(round(a_inv)))
+        elif linear_shift != None:
+            self.larmorfreq = larmorfreq
+            self.linear_shift = linear_shift
+        
+        if hop_size is not None and window_size is not None and window is not None:
+            if window.shape[0] == window_size:
+                self.SFT = ShortTimeFFT(
+                    win=window,
+                    hop=hop_size,
+                    fs=self.fs,
+                    mfft=window_size,
+                    scale_to="magnitude",
+                    fft_mode="centered",
+                )
+                self.hop_size = hop_size
+                self.window_size = window_size
+                self.window = window
+            else:
+                self.SFT = None
+                self.hop_size = None
+                self.window_size = None
+                self.window = None
+        else:
+            self.SFT = None
+            self.hop_size = None
+            self.window_size = None
+            self.window = None
+        
+
+    def __len__(self) -> int:
+        return len(self.file_list)
+
+    def _get_interval_method_augment(self, key):
+        if key in self.random_augment.keys():
+            max = self.random_augment[key]["noise_level_base"]["max"] + 1
+            min = self.random_augment[key]["noise_level_base"]["min"]
+            noise_level_base = np.random.randint(min, max)
+            max = self.random_augment[key]["noise_level_scan_var"]["max"] + 1
+            min = self.random_augment[key]["noise_level_scan_var"]["min"]
+            noise_level_scan_var = np.random.randint(min, max)
+            return noise_level_base, noise_level_scan_var
+        else:
+            return None,None
+        
+    def _modulate_value(self,decimal_value, vector):
+        max_value = np.max(np.abs(vector))
+        order_of_magnitude = int(np.floor(np.log10(max_value))) if max_value != 0 else 0
+        if order_of_magnitude == 0 or order_of_magnitude==1:
+            modulated_value = decimal_value
+        else:
+            modulated_value = decimal_value * 10**(order_of_magnitude-1)
+        return modulated_value
+    
+
+    def __getitem__(
+        self, idx: int
+    ) -> (torch.Tensor, torch.Tensor, torch.Tensor, float, str):
+
+        path_sample = os.path.join(self.path_data, self.file_list[idx])
+        filename = os.path.basename(path_sample)
+        noise_amplitude_base, noise_amplitude_var = self._get_interval_method_augment("amplitude")
+        noise_frequency_base, noise_frequency_var = self._get_interval_method_augment("frequency")
+        noise_phase_base, noise_phase_var = self._get_interval_method_augment("phase")
+
+        transients, target_spectrum, ppm, fs, tacq, larmorfreq = (
+            ReadDatasets.read_h5_complete(path_sample)
+        )
+        transients = np.expand_dims(transients, axis=0) 
+
+        constant_factor = np.max(np.abs(target_spectrum))
+        target_spectrum /= constant_factor
+
+        t = np.arange(0, tacq, 1 /self.fs)
+        t = np.expand_dims(t, axis=0) 
+        if self.augment_with_noise is True:
+            transientmkr = TransientMaker(fids=transients, t=t, create_transients=False)
+            if noise_amplitude_base is not None and noise_amplitude_var is not None:
+                noise_amplitude_base_mod = self._modulate_value(noise_amplitude_base, np.real(transients[0,int(ppm.shape[0]/4):,:,:]))
+                noise_amplitude_var_mod = self._modulate_value(noise_amplitude_var, np.real(transients[0,int(ppm.shape[0]/4):,:,:]))
+                transientmkr.add_random_amplitude_noise(noise_level_base=noise_amplitude_base_mod, 
+                                                        noise_level_scan_var=noise_amplitude_var_mod)
+            if noise_frequency_base is not None and noise_frequency_var is not None:
+                transientmkr.add_random_frequency_noise(noise_level_base=noise_frequency_base, 
+                                                        noise_level_scan_var=noise_frequency_var)
+            if noise_phase_base is not None and noise_phase_var is not None:
+                transientmkr.add_random_phase_noise(noise_level_base=noise_phase_base, 
+                                                        noise_level_scan_var=noise_phase_var)
+            transients = transientmkr.fids
+
+        
+        spectrogram1 = PreProcessing.spgram_channel(
+            fid_off=transients[0,:,0,0:14],
+            fid_on=transients[0,:,1,0:14],
+            fs=self.fs,
+            larmorfreq=self.larmorfreq,
+            linear_shift=self.linear_shift,
+            hop_size=self.hop_size,
+            window_size=self.window_size,
+            window=self.window,
+            SFT=self.SFT,
+        )
+
+        spectrogram2 = PreProcessing.spgram_channel(
+            fid_off=transients[0,:,0,14:27],
+            fid_on=transients[0,:,1,14:27],
+            fs=self.fs,
+            larmorfreq=self.larmorfreq,
+            linear_shift=self.linear_shift,
+            hop_size=self.hop_size,
+            window_size=self.window_size,
+            window=self.window,
+            SFT=self.SFT,
+        )
+
+        spectrogram3 = PreProcessing.spgram_channel(
+            fid_off=transients[0,:,0,27:40],
+            fid_on=transients[0,:,1,27:40],
+            fs=self.fs,
+            larmorfreq=self.larmorfreq,
+            linear_shift=self.linear_shift,
+            hop_size=self.hop_size,
+            window_size=self.window_size,
+            window=self.window,
+            SFT=self.SFT,
+        )
+
+        spectrogram1 = zero_padding(spectrogram1)
+        spectrogram1 = spectrogram1[np.newaxis, ...]
+        spectrogram1 = torch.from_numpy(spectrogram1.real)
+
+        spectrogram2 = zero_padding(spectrogram2)
+        spectrogram2 = spectrogram2[np.newaxis, ...]
+        spectrogram2 = torch.from_numpy(spectrogram2.real)
+
+        spectrogram3 = zero_padding(spectrogram3)
+        spectrogram3 = spectrogram3[np.newaxis, ...]
+        spectrogram3 = torch.from_numpy(spectrogram3.real)
+
+        target_spectrum = torch.from_numpy(target_spectrum)
+        ppm = torch.from_numpy(ppm)
+
+        three_channels_spectrogram = torch.concat(
+            [spectrogram1, spectrogram2, spectrogram3]
+        )
+
+        return (
+            three_channels_spectrogram.type(torch.FloatTensor),
+            target_spectrum.type(torch.FloatTensor),
+            ppm,
+            constant_factor,
+            filename,
+        )

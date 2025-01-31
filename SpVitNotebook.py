@@ -33,16 +33,16 @@ new_model = bool(config['model'].get('new_model', True))
 #data
 data_folder = str(config['data'].get('data_folder','../sample_data.h5'))
 #train data
-start_point_train_data = int(config['data']['start_point_train_data'])
-end_point_train_data = int(config['data']['end_point_train_data'])
-augment_with_noise_train = bool(config['data']['augment_with_noise_train'])
-augment_with_idx_repetition_train = bool(config['data']['augment_with_idx_repetition_train'])
+start_point_train_data = config['data'].get('start_point_train_data',None)
+end_point_train_data = config['data'].get('end_point_train_data',None)
+augment_with_noise_train = bool(config['data'].get('augment_with_noise_train',False))
+augment_with_idx_repetition_train = bool(config['data'].get('augment_with_idx_repetition_train',False))
 qntty_to_augment_by_idx_train = config['data'].get('qntty_to_augment_by_idx_train',None)
 #validation data
-start_point_validation_data = int(config['data']['start_point_validation_data'])
-end_point_validation_data = int(config['data']['end_point_validation_data'])
-augment_with_noise_validation = bool(config['data']['augment_with_noise_validation'])
-augment_with_idx_repetition_validation = bool(config['data']['augment_with_idx_repetition_validation'])
+start_point_validation_data = config['data'].get('start_point_validation_data',None)
+end_point_validation_data = config['data'].get('end_point_validation_data',None)
+augment_with_noise_validation = bool(config['data'].get('augment_with_noise_validation',False))
+augment_with_idx_repetition_validation = bool(config['data'].get('augment_with_idx_repetition_validation',False))
 qntty_to_augment_by_idx_validation = config['data'].get('qntty_to_augment_by_idx_validation',None)
 augment_by_noise_kwargs = config['data'].get('random_augment',{})
 
@@ -126,27 +126,46 @@ if use_wandb is True:
 
 ####----------------------Preparing objects-----------------------------------
 print('Using dataset:',dataset_type)
-dataset_train = FACTORY_DICT["dataset"][dataset_type](path_data=data_folder,
-                                                                      augment_with_noise=augment_with_noise_train,
-                                                                      augment_with_idx_repetition=augment_with_idx_repetition_train,
-                                                                      start=start_point_train_data,
-                                                                      end=end_point_train_data,
-                                                                      hop_size=hop_size,
-                                                                      window_size=window_size,
-                                                                      window=window,
-                                                                      qntty_to_augment_by_idx=qntty_to_augment_by_idx_train,
-                                                                      **augment_by_noise_kwargs)
+if dataset_type == "DatasetRealDataSeparateFiles":
+  dataset_train = FACTORY_DICT["dataset"][dataset_type](path_data=os.path.join(data_folder,'train'),
+                                                        augment_with_noise=augment_with_noise_train,
+                                                        start=start_point_train_data,
+                                                        end=end_point_train_data,
+                                                        hop_size=hop_size,
+                                                        window_size=window_size,
+                                                        window=window,
+                                                        **augment_by_noise_kwargs)
 
-dataset_validation = FACTORY_DICT["dataset"][dataset_type](path_data=data_folder,
-                                                                      augment_with_noise=augment_with_noise_validation,
-                                                                      augment_with_idx_repetition=augment_with_idx_repetition_validation,
-                                                                      start=start_point_validation_data,
-                                                                      end=end_point_validation_data,
-                                                                      hop_size=hop_size,
-                                                                      window_size=window_size,
-                                                                      window=window,
-                                                                      qntty_to_augment_by_idx=qntty_to_augment_by_idx_validation,
-                                                                      **augment_by_noise_kwargs)
+  dataset_validation = FACTORY_DICT["dataset"][dataset_type](path_data=os.path.join(data_folder,'val'),
+                                                              augment_with_noise=augment_with_noise_validation,
+                                                              start=start_point_validation_data,
+                                                              end=end_point_validation_data,
+                                                              hop_size=hop_size,
+                                                              window_size=window_size,
+                                                              window=window,
+                                                              **augment_by_noise_kwargs)
+else:
+  dataset_train = FACTORY_DICT["dataset"][dataset_type](path_data=data_folder,
+                                                        augment_with_noise=augment_with_noise_train,
+                                                        augment_with_idx_repetition=augment_with_idx_repetition_train,
+                                                        start=start_point_train_data,
+                                                        end=end_point_train_data,
+                                                        hop_size=hop_size,
+                                                        window_size=window_size,
+                                                        window=window,
+                                                        qntty_to_augment_by_idx=qntty_to_augment_by_idx_train,
+                                                        **augment_by_noise_kwargs)
+
+  dataset_validation = FACTORY_DICT["dataset"][dataset_type](path_data=data_folder,
+                                                              augment_with_noise=augment_with_noise_validation,
+                                                              augment_with_idx_repetition=augment_with_idx_repetition_validation,
+                                                              start=start_point_validation_data,
+                                                              end=end_point_validation_data,
+                                                              hop_size=hop_size,
+                                                              window_size=window_size,
+                                                              window=window,
+                                                              qntty_to_augment_by_idx=qntty_to_augment_by_idx_validation,
+                                                              **augment_by_noise_kwargs)
 
 
 dataloader_train = DataLoader(dataset_train, batch_size=batch_size_train, shuffle=True)
@@ -252,7 +271,8 @@ if use_wandb is True:
 if new_model is True:
   plot_training_evolution(path=save_dir_path,
                           train_loss_list=train_loss_list,
-                          val_loss_list=val_loss_list)
+                          val_loss_list=val_loss_list,
+                          score_challenge_list=score_challenge_list)
   plot_metrics_evolution(path=save_dir_path,
                            val_mean_mse_list=val_mean_mse_list,
                            val_mean_snr_list=val_mean_snr_list,
@@ -263,7 +283,8 @@ else:
     metrics = retrieve_metrics_from_csv(path_file=save_dir_path+'losses_and_metrics.csv')
     plot_training_evolution(path=save_dir_path,
                           train_loss_list=metrics["LossTrain"],
-                          val_loss_list=metrics["LossVal"])
+                          val_loss_list=metrics["LossVal"],
+                          score_challenge_list=metrics["ChalScVal"])
     plot_metrics_evolution(path=save_dir_path,
                            val_mean_mse_list=metrics['MSEVal'],
                            val_mean_snr_list=metrics['SNRVal'],

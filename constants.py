@@ -25,6 +25,7 @@ FACTORY_DICT = {
         "DatasetSpgramSyntheticDataOldSTFT": DatasetSpgramSyntheticDataOldSTFT,
         "DatasetSpgramRealData": DatasetSpgramRealData,
         "DatasetSpgramRealDataOldSTFT": DatasetSpgramRealDataOldSTFT,
+        "DatasetRealDataSeparateFiles": DatasetRealDataSeparateFiles,
     },
     "optimizer": {
         "Adam": torch.optim.Adam,
