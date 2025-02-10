@@ -8,8 +8,18 @@ from metrics import calculate_metrics
 from plot_metrics import PlotMetrics
 from tqdm import trange
 
+"""
+Functions in here are simplified versions of some functions in main.py.
+main.py has the training and validation loop from original implementation.
+The experimental implementation uses the functions in this script and call
+them in SpVitNotebook.py, which contain the main train and validation loop.
+"""
 
 def valid_on_the_fly(model, epoch, val_dataset, save_dir_path, filename, device):
+    """
+    Get a set of reconstruction predictions from validation data and save reconstructions 
+    plots to a folder.
+    """
     model.eval()
 
     random_index = random.randint(0, len(val_dataset) - 1)

@@ -28,6 +28,7 @@ class SaveBestModel:
             if wandb_run is not None:
                 wandb_run.save(f"{self.dir_model}{name_model}")
 
+#same as previous function, but also saves current epoch in a JSON file.
 class SaveBestModelState:
     def __init__(self, dir_save_model, best_score=float("inf")):
         self.best_score = best_score
@@ -70,7 +71,8 @@ class SaveLossesAndMetrics:
                                  score_challenge_list[i]])
         self.save_count_idx = len(train_loss_list)
 
-
+#save current model, optimizer and learning rate to resume training 
+#in case something goes wrong (power loss, for example)
 def safe_save(dir_save_models, name_model,
               model, epoch, optimizer, current_lr,
               lr_scheduler=None):
@@ -88,6 +90,7 @@ def safe_save(dir_save_models, name_model,
     with open(f"{dir_save_models}{name_model}_training_state_savesafe", "w") as outfile:
         outfile.write(json.dumps(training_state, indent=4))
 
+#delete files used to resume training to save space
 def delete_safe_save(dir_save_models, name_model):
     if os.path.isfile(f"{dir_save_models}{name_model}_trained.pt"):
         if os.path.isfile(f"{dir_save_models}{name_model}_savesafe.pt"):
@@ -99,6 +102,7 @@ def delete_safe_save(dir_save_models, name_model):
         if os.path.isfile(f"{dir_save_models}{name_model}_training_state_savesafe"):
             os.remove(f"{dir_save_models}{name_model}_training_state_savesafe")
 
+#save final model
 def save_trained_model(dir_save_models, name_model, model):
     torch.save(model.state_dict(), f"{dir_save_models}{name_model}_trained.pt")
 

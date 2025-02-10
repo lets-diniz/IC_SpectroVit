@@ -18,6 +18,13 @@ from utils import clean_directory, read_yaml, retrieve_metrics_from_csv, plot_tr
 from save_models import safe_save, delete_safe_save, save_trained_model
 from constants import *
 
+"""
+Main file: receives a YAML file to define training.
+Contains training and validation loops. After the script is finished, one will find a folder with
+the model of last epoch and model with best performance (in case this option is selected). The folder 
+will also contain examples of reconstructed spectra through training, as well as a csv file with the evolution
+of  quantitative metrics through training.
+"""
 
 config_path = input("Enter path for config.yaml: ")
 config = read_yaml(file=config_path)
@@ -126,6 +133,8 @@ if use_wandb is True:
 
 ####----------------------Preparing objects-----------------------------------
 print('Using dataset:',dataset_type)
+#dataset call will depend if transients are defined in different files in an unique folder
+#or if they are instances of an unique h5 file
 if dataset_type == "DatasetRealDataSeparateFiles":
   dataset_train = FACTORY_DICT["dataset"][dataset_type](path_data=os.path.join(data_folder,'train'),
                                                         augment_with_noise=augment_with_noise_train,
@@ -171,6 +180,7 @@ else:
 dataloader_train = DataLoader(dataset_train, batch_size=batch_size_train, shuffle=True)
 dataloader_validation = DataLoader(dataset_validation, batch_size=batch_size_validation, shuffle=True)
 
+#lists to save training evolution
 train_loss_list = []
 val_loss_list = []
 val_mean_mse_list = []
@@ -179,6 +189,7 @@ val_mean_linewidth_list = []
 val_mean_shape_score_list = []
 score_challenge_list = []
 
+#set up environment to start training or to resume training
 os.makedirs(save_dir_path, exist_ok=True)
 if new_model is True:
   clean_directory(save_dir_path)
@@ -189,7 +200,7 @@ if new_model is True:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 else:
-    print('Loading old model to keep training...')
+    print('Loading old model to resume training...')
     if 'path_to_saved_model' in config['model']:
       if config['model']['path_to_saved_model'] != "":
         spectrovit.load_state_dict(torch.load(str(config['model']['path_to_saved_model']), weights_only=True))
@@ -238,6 +249,7 @@ for epoch in range(n_epochs):
   if epoch%step_for_saving_plots == 0:
     valid_on_the_fly(model=spectrovit, epoch=epoch, val_dataset=dataset_validation, save_dir_path=save_dir_path, filename=name_model, device=device)
 
+  #save intermediary models and results in case there is a power loss
   if epoch%step_to_safe_save_models == 0:
     current_lr = model_scheduler.scheduler.get_last_lr()[0] if use_lr_scheduler else initial_lr
     safe_save(dir_save_models=dir_save_models, name_model=name_model,
@@ -263,6 +275,7 @@ for epoch in range(n_epochs):
 
 ####----------------------Finishing-----------------------------------
 save_trained_model(dir_save_models=dir_save_models, name_model=name_model, model=spectrovit)
+#delete intermediary files to save memory
 delete_safe_save(dir_save_models=dir_save_models, name_model=name_model)
 
 if use_wandb is True:
