@@ -1,10 +1,10 @@
 device: 'cpu'
 
-test_name: 'test_models_trained_real_data_track2n3_noisemod'
+test_name: 'test_models_trained_synthetic_data'
 
 test_dataset:
-  path: '../dataset_test_realdata_augmented_from_tracks2and3.h5'
-  type: 'DatasetSpgramRealData'
+  path: '../dataset_test_multiplenoise_from_SGT_4000_to_5000.h5'
+  type: 'DatasetSpgramSyntheticData'
 
 
 hop_values:
@@ -17,13 +17,13 @@ hop_values:
         - 34
 
 model_names: 
-        - '../model_hop_10_realdata_track2n3_noisemod_phcorr/models/model_hop_10_realdata_track2n3_noisemod_phcorr_best.pt'
-        - '../model_hop_14_realdata_track2n3_noisemod_phcorr/models/model_hop_14_realdata_track2n3_noisemod_phcorr_best.pt'
-        - '../model_hop_18_realdata_track2n3_noisemod_phcorr/models/model_hop_18_realdata_track2n3_noisemod_phcorr_best.pt'
-        - '../model_hop_22_realdata_track2n3_noisemod_phcorr/models/model_hop_22_realdata_track2n3_noisemod_phcorr_best.pt'
-        - '../model_hop_26_realdata_track2n3_noisemod_phcorr/models/model_hop_26_realdata_track2n3_noisemod_phcorr_best.pt'
-        - '../model_hop_30_realdata_track2n3_noisemod_phcorr/models/model_hop_30_realdata_track2n3_noisemod_phcorr_best.pt'
-        - '../model_hop_34_realdata_track2n3_noisemod_phcorr/models/model_hop_34_realdata_track2n3_noisemod_phcorr_best.pt'
+        - '../model_hop_10_3500GT/models/model_hop_10_3500GT_best.pt'
+        - '../model_hop_14_3500GT/models/model_hop_14_3500GT_best.pt'
+        - '../model_hop_18_3500GT/models/model_hop_18_3500GT_best.pt'
+        - '../model_hop_22_3500GT/models/model_hop_22_3500GT_best.pt'
+        - '../model_hop_26_3500GT/models/model_hop_26_3500GT_best.pt'
+        - '../model_hop_30_3500GT/models/model_hop_30_3500GT_best.pt'
+        - '../model_hop_34_3500GT/models/model_hop_34_3500GT_best.pt'
 
 model_nicknames:
         - 'vit_10'

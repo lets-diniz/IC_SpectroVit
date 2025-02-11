@@ -12,7 +12,7 @@ from tqdm import trange
 Functions in here are simplified versions of some functions in main.py.
 main.py has the training and validation loop from original implementation.
 The experimental implementation uses the functions in this script and call
-them in SpVitNotebook.py, which contain the main train and validation loop.
+them in run_spectrovit_train.py, which contain the main train and validation loop.
 """
 
 def valid_on_the_fly(model, epoch, val_dataset, save_dir_path, filename, device):

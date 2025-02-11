@@ -72,5 +72,3 @@ save_models_and_results:
 
 wandb:
   activate: False
-
-
